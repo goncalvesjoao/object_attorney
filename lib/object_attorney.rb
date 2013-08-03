@@ -43,26 +43,6 @@ module ObjectAttorney
 
   protected #--------------------------------------------------protected
 
-  def self.included(base)
-    base.extend(ClassMethods)
-
-    base.class_eval do
-      include ActiveModel::Validations
-      include ActiveModel::Conversion
-      include ObjectAttorney::NestedObjects
-      include ObjectAttorney::ORM
-
-      validate :validate_represented_object
-
-      def valid?
-        override_validations? ? true : super
-      end
-    end
-
-    base.instance_variable_set("@white_list", [])
-    base.instance_variable_set("@black_list", [])
-  end
-
   def allowed_attribute(attribute)
     attribute = attribute.to_s
 
@@ -86,7 +66,27 @@ module ObjectAttorney
     @represented_object.errors.each { |key, value| self.errors.add(key, value) }
   end
 
-  private #------------------------------ private
+  private #################### PRIVATE METHODS DOWN BELOW ######################
+
+  def self.included(base)
+    base.extend(ClassMethods)
+
+    base.class_eval do
+      include ActiveModel::Validations
+      include ActiveModel::Conversion
+      include ObjectAttorney::NestedObjects
+      include ObjectAttorney::ORM
+
+      validate :validate_represented_object
+
+      def valid?
+        override_validations? ? true : super
+      end
+    end
+
+    base.instance_variable_set("@white_list", [])
+    base.instance_variable_set("@black_list", [])
+  end
 
   def represented_object(object)
     object.extend(ObjectAttorney::Try)

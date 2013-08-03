@@ -10,54 +10,68 @@ module ObjectAttorney
     end
 
     def save
-      save_process
+      save!(:save)
     end
 
-    def save!
-      save_process true
+    def save!(method = :save!)
+      before_save
+      save_result = transactional_save(method)
+      after_save if valid? && save_result
+      save_result
     end
 
     def destroy
-      @represented_object.try_or_return(:destroy, true) && nested_objects.all?(&:destroy)
+      class.saving_order.reverse.each do |object_symbol|
+        call_method_on_symbol(:destroy, object_symbol)
+      end
     end
 
-    protected #--------------------------------------------------protected
-
-    def save_process(raise_exception = false)
-      before_save
-      save_result = raise_exception ? _save! : _save
-      after_save if save_result
-      save_result
-    end
+    protected #################### PROTECTED METHODS DOWN BELOW ######################
 
     def before_save; end
     def after_save; end
 
-    def _save
-      begin
-        ActiveRecord::Base.transaction { _save! }
-      rescue
-        valid?
-        false
+    def save_represented_object(method = nil)
+      @represented_object.try_or_return(method, true)
+    end
+
+    private #################### PRIVATE METHODS DOWN BELOW ######################
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    def transactional_save(method)
+      class.saving_order.each do |object_symbol|
+
+        if object_symbol == :self
+          valid? ? save_represented_object(method) : false
+        else
+          
+          [*send(object_symbol)].map do |object|
+            object.send(method)
+          end
+
+        end
+
       end
     end
 
-    def _save!
-      result = (save_or_raise_rollback! ? save_or_destroy_nested_objects : false)
-      valid?
-      result
-    end
-
-    def save_or_raise_rollback!
-      if valid?
-        save_represented_object
+    def call_method_on_symbol(method, object_symbol)
+      if object_symbol == :self
+        @represented_object.try_or_return(method, true)
       else
-        raise ActiveRecord::Rollback
+        [*send(object_symbol)].map { |object| object.send(method) }
       end
     end
 
-    def save_represented_object
-      @represented_object.try_or_return(:save!, true)
+    module ClassMethods
+
+      attr_writer :saving_order
+      def saving_order
+        @saving_order ||= [:self]
+      end
+
     end
 
   end

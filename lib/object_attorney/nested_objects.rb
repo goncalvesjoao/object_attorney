@@ -21,17 +21,7 @@ module ObjectAttorney
       object.mark_for_destruction if ["true", "1"].include?(_destroy)
     end
 
-    protected #--------------------------------------------------protected
-
-    def self.included(base)
-      base.extend(ClassMethods)
-
-      base.class_eval do
-        validate :validate_nested_objects
-      end
-
-      base.instance_variable_set("@nested_objects", [])
-    end
+    protected #################### PROTECTED METHODS DOWN BELOW ######################
 
     def save_or_destroy_nested_objects
       result = nested_objects.map do |nested_object|
@@ -66,7 +56,17 @@ module ObjectAttorney
       attributes.present? ? (attributes.values.select { |x| x[:id].to_i == existing_nested_object.id }.first || {}) : {}
     end
 
-    private #------------------------------ private
+    private #################### PRIVATE METHODS DOWN BELOW ######################
+
+    def self.included(base)
+      base.extend(ClassMethods)
+
+      base.class_eval do
+        validate :validate_nested_objects
+      end
+
+      base.instance_variable_set("@nested_objects", [])
+    end
 
     def attributes_without_destroy(attributes)
       return nil unless attributes.kind_of?(Hash)
@@ -132,7 +132,7 @@ module ObjectAttorney
         nil
       end
 
-      private #------------------------ private
+      private #################### PRIVATE METHODS DOWN BELOW ######################
 
       def define_nested_objects_getter_methods(nested_objects_list)
         nested_objects_list.each do |nested_object_name|
