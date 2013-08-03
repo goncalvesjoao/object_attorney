@@ -2,11 +2,11 @@ module ObjectAttorney
   module ORM
   
     def new_record?
-      @object.try_or_return(:new_record?, true)
+      @represented_object.try_or_return(:new_record?, true)
     end
 
     def persisted?
-      @object.try_or_return(:persisted?, false)
+      @represented_object.try_or_return(:persisted?, false)
     end
 
     def save
@@ -18,7 +18,7 @@ module ObjectAttorney
     end
 
     def destroy
-      @object.try_or_return(:destroy, true) && nested_objects.all?(&:destroy)
+      @represented_object.try_or_return(:destroy, true) && nested_objects.all?(&:destroy)
     end
 
     protected #--------------------------------------------------protected
@@ -50,14 +50,14 @@ module ObjectAttorney
 
     def save_or_raise_rollback!
       if valid?
-        save_own_object
+        save_represented_object
       else
         raise ActiveRecord::Rollback
       end
     end
 
-    def save_own_object
-      @object.try_or_return(:save!, true)
+    def save_represented_object
+      @represented_object.try_or_return(:save!, true)
     end
 
   end

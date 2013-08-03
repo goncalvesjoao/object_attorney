@@ -2,12 +2,7 @@ module ObjectAttorney
   module NestedObjects
 
     def nested_objects
-      unless nested_objects_updated
-        @nested_objects = self.class.instance_variable_get("@nested_objects").map { |nested_object_sym| self.send(nested_object_sym) }.flatten
-        nested_objects_updated = true
-      end
-      
-      @nested_objects
+      self.class.instance_variable_get("@nested_objects").map { |nested_object_sym| self.send(nested_object_sym) }.flatten
     end
 
     def mark_for_destruction
@@ -32,7 +27,6 @@ module ObjectAttorney
       base.extend(ClassMethods)
 
       base.class_eval do
-        attr_accessor :nested_objects_updated
         validate :validate_nested_objects
       end
 
@@ -83,7 +77,7 @@ module ObjectAttorney
 
       _attributes
     end
-    
+
     def nested_getter(nested_object_name)
       nested_instance_variable = self.instance_variable_get("@#{nested_object_name}")
 

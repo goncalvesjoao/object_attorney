@@ -22,8 +22,7 @@ module ObjectAttorney
       object = nil
     end
 
-    @object = object if object.present?
-    @trusted_data = options[:trusted_data] if options.present? && options.kind_of?(Hash)
+    @represented_object = object if object.present?
 
     assign_attributes attributes
     mark_for_destruction_if_necessary(self, attributes)
@@ -50,11 +49,10 @@ module ObjectAttorney
       include ActiveModel::Validations
       include ActiveModel::Conversion
 
-      attr_accessor :trusted_data
-      validate :validate_own_object
+      validate :validate_represented_object
 
       def valid?
-        override_valid? ? true : super
+        override_validations? ? true : super
       end
     end
 
@@ -72,34 +70,34 @@ module ObjectAttorney
   end
 
   def black_list
-    [*self.class.instance_variable_get("@black_list"), "trusted_data", "nested_objects_updated", "_destroy"]
+    [*self.class.instance_variable_get("@black_list"), "_destroy"]
   end
 
-  def validate_own_object
-    valid = override_valid? ? true : @object.try_or_return(:valid?, true)
-    import_own_object_errors unless valid
+  def validate_represented_object
+    valid = override_validations? ? true : @represented_object.try_or_return(:valid?, true)
+    import_represented_object_errors unless valid
     valid
   end
 
-  def import_own_object_errors
-    @object.errors.each { |key, value| self.errors.add(key, value) }
+  def import_represented_object_errors
+    @represented_object.errors.each { |key, value| self.errors.add(key, value) }
   end
 
   private #------------------------------ private
 
-  def override_valid?
+  def override_validations?
     marked_for_destruction?
   end
 
   module ClassMethods
     
-    attr_accessor :own_object_class
+    attr_accessor :represented_object_class
 
-    def represents(own_object)
-      define_method(own_object) do
-        own_object_class = self.class.instance_variable_get(:@own_object_class)
-        own_object_class ||= own_object.to_s.camelize
-        @object ||= own_object_class.constantize.new
+    def represents(represented_object)
+      define_method(represented_object) do
+        represented_object_class = self.class.instance_variable_get(:@represented_object_class)
+        represented_object_class ||= represented_object.to_s.camelize
+        @represented_object ||= represented_object_class.constantize.new
       end
     end
 
