@@ -21,7 +21,7 @@ module ObjectAttorney
     end
 
     def destroy
-      class.saving_order.reverse.each do |object_symbol|
+      self.class.saving_order.reverse.each do |object_symbol|
         call_method_on_symbol(:destroy, object_symbol)
       end
     end
@@ -42,7 +42,7 @@ module ObjectAttorney
     end
 
     def transactional_save(method)
-      class.saving_order.each do |object_symbol|
+      self.class.saving_order.each do |object_symbol|
 
         if object_symbol == :self
           valid? ? save_represented_object(method) : false
