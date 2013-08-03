@@ -5,11 +5,6 @@ require "object_attorney/orm"
 
 module ObjectAttorney
 
-  ################# EXAMPLES ##################
-  # represents :user
-  # accepts_nested_objects :addess, :posts
-  #############################################
-
   def initialize(attributes = {}, object = nil, options = {})
     if !attributes.kind_of?(Hash) && object.blank?
       object = attributes
