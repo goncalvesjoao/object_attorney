@@ -2,20 +2,20 @@ module ObjectAttorney
   module ORM
   
     def new_record?
-      @represented_object.try_or_return(:new_record?, true)
+      try_or_return(@represented_object, :new_record?, true)
     end
 
     def persisted?
-      @represented_object.try_or_return(:persisted?, false)
+      try_or_return(@represented_object, :persisted?, false)
     end
 
     def save
       save!(:save)
     end
 
-    def save!(method = :save!)
+    def save!(save_method = :save!)
       before_save
-      save_result = transactional_save(method)
+      save_result = transactional_save(save_method)
       after_save if valid? && save_result
       save_result
     end
@@ -31,8 +31,8 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def save_represented_object(method = nil)
-      @represented_object.try_or_return(method, true)
+    def save_represented_object(save_method = nil)
+      try_or_return(@represented_object, method, true)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
@@ -41,15 +41,15 @@ module ObjectAttorney
       base.extend(ClassMethods)
     end
 
-    def transactional_save(method)
+    def transactional_save(save_method)
       self.class.saving_order.each do |object_symbol|
 
         if object_symbol == :self
-          valid? ? save_represented_object(method) : false
+          valid? ? save_represented_object(save_method) : false
         else
           
           [*send(object_symbol)].each do |object|
-            object.send(method)
+            object.send(save_method)
           end
 
         end
@@ -59,7 +59,7 @@ module ObjectAttorney
 
     def call_method_on_symbol(method, object_symbol)
       if object_symbol == :self
-        @represented_object.try_or_return(method, true)
+        try_or_return(@represented_object, method, true)
       else
         [*send(object_symbol)].map { |object| object.send(method) }
       end

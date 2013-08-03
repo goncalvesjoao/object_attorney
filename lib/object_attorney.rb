@@ -1,5 +1,4 @@
 require "object_attorney/version"
-require "object_attorney/try"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 
@@ -18,7 +17,7 @@ module ObjectAttorney
       object = nil
     end
 
-    @represented_object = represented_object(object) if object.present?
+    @represented_object = object if object.present?
 
     assign_attributes attributes
     mark_for_destruction_if_necessary(self, attributes)
@@ -48,7 +47,7 @@ module ObjectAttorney
   end
 
   def validate_represented_object
-    valid = override_validations? ? true : @represented_object.try_or_return(:valid?, true)
+    valid = override_validations? ? true : try_or_return(@represented_object, :valid?, true)
     import_represented_object_errors unless valid
     valid
   end
@@ -76,12 +75,13 @@ module ObjectAttorney
     end
   end
 
-  def represented_object(object)
-    object.extend(ObjectAttorney::Try)
-  end
-
   def override_validations?
     marked_for_destruction?
+  end
+
+  def try_or_return(object, method, default_value)
+    returning_value = object.try(method)
+    returning_value.nil? ? default_value : returning_value
   end
 
   module ClassMethods
@@ -90,7 +90,7 @@ module ObjectAttorney
       represented_object_class ||= represented_object.to_s.camelize
 
       define_method(represented_object) do
-        @represented_object ||= get_represented_object(represented_object_class.constantize.new)
+        @represented_object ||= represented_object_class.constantize.new
       end
     end
 
