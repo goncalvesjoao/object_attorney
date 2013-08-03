@@ -1,4 +1,5 @@
 require "object_attorney/version"
+require "object_attorney/try"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 
@@ -22,7 +23,7 @@ module ObjectAttorney
       object = nil
     end
 
-    @represented_object = object if object.present?
+    @represented_object = represented_object(object) if object.present?
 
     assign_attributes attributes
     mark_for_destruction_if_necessary(self, attributes)
@@ -48,6 +49,8 @@ module ObjectAttorney
     base.class_eval do
       include ActiveModel::Validations
       include ActiveModel::Conversion
+      include ObjectAttorney::NestedObjects
+      include ObjectAttorney::ORM
 
       validate :validate_represented_object
 
@@ -85,19 +88,21 @@ module ObjectAttorney
 
   private #------------------------------ private
 
+  def represented_object(object)
+    object.extend(ObjectAttorney::Try)
+  end
+
   def override_validations?
     marked_for_destruction?
   end
 
   module ClassMethods
-    
-    attr_accessor :represented_object_class
 
-    def represents(represented_object)
+    def represents(represented_object, represented_object_class = nil)
+      represented_object_class ||= represented_object.to_s.camelize
+
       define_method(represented_object) do
-        represented_object_class = self.class.instance_variable_get(:@represented_object_class)
-        represented_object_class ||= represented_object.to_s.camelize
-        @represented_object ||= represented_object_class.constantize.new
+        @represented_object ||= get_represented_object(represented_object_class.constantize.new)
       end
     end
 
