@@ -66,8 +66,24 @@ module ObjectAttorney
       end
     end
 
+    def get_attributes_for_existing(nested_object_name, existing_nested_object)
+      attributes = send("#{nested_object_name}_attributes")
+      return {} if attributes.blank?
+      attributes.present? ? (attributes.values.select { |x| x[:id].to_i == existing_nested_object.id }.first || {}) : {}
+    end
+
     private #------------------------------ private
 
+    def attributes_without_destroy(attributes)
+      return nil unless attributes.kind_of?(Hash)
+
+      _attributes = attributes.dup
+      _attributes.delete("_destroy")
+      _attributes.delete(:_destroy)
+
+      _attributes
+    end
+    
     def nested_getter(nested_object_name)
       nested_instance_variable = self.instance_variable_get("@#{nested_object_name}")
 
