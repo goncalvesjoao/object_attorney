@@ -46,14 +46,10 @@ module ObjectAttorney
   def allowed_attribute(attribute)
     attribute = attribute.to_s
 
-    return false  if !respond_to?("#{attribute}=") || black_list.include?(attribute)
-    return true   if self.class.instance_variable_get("@white_list").empty?
+    return false  if !respond_to?("#{attribute}=") || self.class.black_list.include?(attribute)
+    return true   if self.class.white_list.empty?
 
-    self.class.instance_variable_get("@white_list").include?(attribute)
-  end
-
-  def black_list
-    [*self.class.instance_variable_get("@black_list"), "_destroy"]
+    self.class.white_list.include?(attribute)
   end
 
   def validate_represented_object
@@ -83,9 +79,6 @@ module ObjectAttorney
         override_validations? ? true : super
       end
     end
-
-    base.instance_variable_set("@white_list", [])
-    base.instance_variable_set("@black_list", [])
   end
 
   def represented_object(object)
@@ -106,12 +99,20 @@ module ObjectAttorney
       end
     end
 
-    def attr_white_list(*white_list)
-      self.class.instance_variable_set("@white_list", white_list.map(&:to_s))
+    def attr_white_list=(*white_list)
+      @white_list = white_list.map(&:to_s)
+    end
+
+    def white_list
+      @white_list ||= []
     end
 
     def attr_black_list(*black_list)
-      self.class.instance_variable_set("@black_list", black_list.map(&:to_s))
+      @black_list = black_list.map(&:to_s)
+    end
+
+    def black_list
+      @black_list ||= ["_destroy"]
     end
 
   end
