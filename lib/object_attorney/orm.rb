@@ -48,7 +48,7 @@ module ObjectAttorney
           valid? ? save_represented_object(method) : false
         else
           
-          [*send(object_symbol)].map do |object|
+          [*send(object_symbol)].each do |object|
             object.send(method)
           end
 
@@ -67,9 +67,12 @@ module ObjectAttorney
 
     module ClassMethods
 
-      attr_writer :saving_order
-      def saving_order
-        @saving_order ||= [:self]
+      def saving_order(*saving_order_list)
+        if saving_order_list.blank?
+          @saving_order ||= [:self, *self.instance_variable_get("@nested_objects")]
+        else
+          @saving_order = saving_order_list
+        end
       end
 
     end
