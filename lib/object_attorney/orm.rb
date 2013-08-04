@@ -15,7 +15,7 @@ module ObjectAttorney
 
     def save!(save_method = :save!)
       before_save
-      save_result = transactional_save(save_method)
+      save_result, saving_order_vs_save_result = transactional_save(save_method)
       after_save if valid? && save_result
       save_result
     end
@@ -31,29 +31,50 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def save_represented_object(save_method = nil)
-      try_or_return(@represented_object, method, true)
+    def save_represented_object(save_method)
+      try_or_return(@represented_object, save_method, true)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
-    def self.included(base)
-      base.extend(ClassMethods)
+    def transactional_save(save_method)
+      return false unless valid?
+
+      saving_order_vs_save_result = {}
+      
+      objects_by_saving_order.each do |symbol_vs_object|
+        symbol = symbol_vs_object.first[0]
+        object = symbol_vs_object.first[1]
+
+        saving_order_vs_save_result[symbol] = call_save_or_destroy(object, save_method)
+
+        return false unless saving_order_vs_save_result[symbol]
+      end
+
+      true
     end
 
-    def transactional_save(save_method)
-      self.class.saving_order.each do |object_symbol|
+    def call_save_or_destroy(object, save_method)
+      if object == self
+        save_represented_object(save_method)
+      else
+        check_if_marked_for_destruction?(object) ? object.destroy : object.send(save_method)
+      end
+    end
 
-        if object_symbol == :self
-          valid? ? save_represented_object(save_method) : false
-        else
-          
-          [*send(object_symbol)].each do |object|
-            object.send(save_method)
-          end
-
+    def objects_by_saving_order
+      self.class.saving_order.map do |object_symbol|
+        [*call_method_represented_by(object_symbol)].map do |object|
+          { object_symbol => object }
         end
+      end.flatten
+    end
 
+    def call_method_represented_by(object_symbol)
+      if object_symbol == :self
+        self
+      else
+        send(object_symbol)
       end
     end
 
@@ -63,6 +84,14 @@ module ObjectAttorney
       else
         [*send(object_symbol)].map { |object| object.send(method) }
       end
+    end
+
+    def check_if_marked_for_destruction?(object)
+      object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
+    end
+
+    def self.included(base)
+      base.extend(ClassMethods)
     end
 
     module ClassMethods
