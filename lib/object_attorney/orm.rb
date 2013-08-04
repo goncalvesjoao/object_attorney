@@ -21,8 +21,10 @@ module ObjectAttorney
     end
 
     def destroy
-      self.class.saving_order.reverse.each do |object_symbol|
-        call_method_on_symbol(:destroy, object_symbol)
+      self.class.saving_order.reverse.map do |object_symbol|
+        [*call_method_represented_by(object_symbol)].map do |object|
+          object_symbol == :self ? destroy_represented_object : object.destroy
+        end
       end
     end
 
@@ -31,8 +33,15 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
+    def before_represented_object; end
+    def after_save_represented_object; end
+
     def save_represented_object(save_method)
       try_or_return(@represented_object, save_method, true)
+    end
+
+    def destroy_represented_object
+      try_or_return(@represented_object, :destroy, true)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
@@ -40,15 +49,10 @@ module ObjectAttorney
     def transactional_save(save_method)
       return false unless valid?
 
-      saving_order_vs_save_result = {}
-      
-      objects_by_saving_order.each do |symbol_vs_object|
-        symbol = symbol_vs_object.first[0]
-        object = symbol_vs_object.first[1]
-
-        saving_order_vs_save_result[symbol] = call_save_or_destroy(object, save_method)
-
-        return false unless saving_order_vs_save_result[symbol]
+      self.class.saving_order.map do |object_symbol|
+        [*call_method_represented_by(object_symbol)].map do |object|
+          return false unless call_save_or_destroy(object, save_method)
+        end
       end
 
       true
@@ -56,33 +60,32 @@ module ObjectAttorney
 
     def call_save_or_destroy(object, save_method)
       if object == self
-        save_represented_object(save_method)
+        save_represented_object_and_run_callbacks(save_method)
       else
         check_if_marked_for_destruction?(object) ? object.destroy : object.send(save_method)
       end
     end
 
-    def objects_by_saving_order
-      self.class.saving_order.map do |object_symbol|
-        [*call_method_represented_by(object_symbol)].map do |object|
-          { object_symbol => object }
-        end
-      end.flatten
+    def save_represented_object_and_run_callbacks(save_method)
+      before_represented_object
+      save_result = save_represented_object(save_method)
+      after_save_represented_object if save_result
+      save_result
     end
+
+    # def objects_by_saving_order
+    #   self.class.saving_order.map do |object_symbol|
+    #     [*call_method_represented_by(object_symbol)].map do |object|
+    #       OpenStruct.new(symbol: object_symbol, object: object)
+    #     end
+    #   end.flatten
+    # end
 
     def call_method_represented_by(object_symbol)
       if object_symbol == :self
         self
       else
         send(object_symbol)
-      end
-    end
-
-    def call_method_on_symbol(method, object_symbol)
-      if object_symbol == :self
-        try_or_return(@represented_object, method, true)
-      else
-        [*send(object_symbol)].map { |object| object.send(method) }
       end
     end
 
