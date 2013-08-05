@@ -23,16 +23,6 @@ module ObjectAttorney
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-    def save_or_destroy_nested_objects
-      result = nested_objects.map do |nested_object|
-        nested_object.marked_for_destruction? ? nested_object.destroy : nested_object.save!
-      end.all?
-
-      self.errors.add(:base, "Some errors where found while saving the nested objects.") unless result
-
-      result
-    end
-
     def validate_nested_objects
       #nested_objects.all?(&:valid?) #will not validate all nested_objects
       return true if nested_objects.reject(&:marked_for_destruction?).map(&:valid?).all?
