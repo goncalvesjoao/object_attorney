@@ -9,19 +9,28 @@ module ObjectAttorney
       try_or_return(@represented_object, :persisted?, false)
     end
 
-    def save
-      save!(:save)
+    def save(options = {})
+      save!(options, :save)
     end
 
-    def save!(save_method = :save!)
+    def save!(options = {}, save_method = :save!)
       before_save
-      save_result = valid? ? save_after_validations(save_method) : false
+      save_result = valid? ? save_represented_object(save_method, options) : false
       after_save if valid? && save_result
       save_result
     end
 
-    def destroy
-      destroy_represented_object
+    def destroy(options = {})
+      destroy_represented_object(options)
+    end
+
+    def call_save_or_destroy(object, save_method, options = {})
+      if object == self
+        @represented_object.present? ? evoke_method_on_object(@represented_object, save_method, options) : true
+      else
+        save_method = :destroy if check_if_marked_for_destruction?(object)
+        evoke_method_on_object(object, save_method, options)
+      end
     end
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
@@ -29,26 +38,28 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def save_after_validations(save_method)
-      call_save_or_destroy(self, save_method)
+    def destroy_represented_object(options = {})
+      return true if @represented_object.blank?
+      evoke_method_on_object(@represented_object, :destroy, options)
     end
 
-    def destroy_represented_object
-      try_or_return(@represented_object, :destroy, true)
+    def save_represented_object(save_method, options = {})
+      return true if @represented_object.blank?
+      evoke_method_on_object(@represented_object, save_method, options)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
-    def call_save_or_destroy(object, save_method)
-      if object == self
-        try_or_return(@represented_object, save_method, true)
-      else
-        check_if_marked_for_destruction?(object) ? object.destroy : object.send(save_method)
-      end
-    end
-
     def check_if_marked_for_destruction?(object)
       object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
+    end
+
+    def evoke_method_on_object(object, method, options = {})
+      #if object.instance_method(method).arity > 1
+        object.send(method, options)
+      #else
+        # object.send(method)
+      #end
     end
 
   end
