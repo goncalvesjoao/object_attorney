@@ -24,6 +24,10 @@ module ObjectAttorney
       destroy_represented_object(options)
     end
 
+    def rollback(options = {})
+      @represented_object.rollback(options)
+    end
+
     def call_save_or_destroy(object, save_method, options = {})
       if object == self
         @represented_object.present? ? evoke_method_on_object(@represented_object, save_method, options) : true
