@@ -25,7 +25,7 @@ module ObjectAttorney
       end
 
       def call_save_or_destroy(object, save_method, options = {})
-        if object == self
+        if object == self || object == @represented_object
           @represented_object.present? ? evoke_method_on_object(@represented_object, save_method, options) : true
         else
           save_method = :destroy if check_if_marked_for_destruction?(object)
