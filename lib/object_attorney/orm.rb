@@ -15,13 +15,14 @@ module ObjectAttorney
 
     def save!(options = {}, save_method = :save!)
       before_save
-      save_result = valid? ? save_represented_object(save_method, options) : false
+      save_result = valid? ? save_after_validations(save_method, options) : false
       after_save if valid? && save_result
       save_result
     end
 
     def destroy(options = {})
-      destroy_represented_object(options)
+      return true if @represented_object.blank?
+      evoke_method_on_object(@represented_object, :destroy, options)
     end
 
     def rollback(options = {})
@@ -42,12 +43,7 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def destroy_represented_object(options = {})
-      return true if @represented_object.blank?
-      evoke_method_on_object(@represented_object, :destroy, options)
-    end
-
-    def save_represented_object(save_method, options = {})
+    def save_after_validations(save_method, options = {})
       return true if @represented_object.blank?
       evoke_method_on_object(@represented_object, save_method, options)
     end
