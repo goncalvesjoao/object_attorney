@@ -94,6 +94,14 @@ module ObjectAttorney
       end
     end
 
+    def delegate_properties(*properties, options)
+      properties.each { |property| delegate_propertiy(property, options) }
+    end
+
+    def delegate_propertiy(property, options)
+      delegate property, "#{property}=", options
+    end
+
     def attr_white_list=(*white_list)
       @white_list = white_list.map(&:to_s)
     end
