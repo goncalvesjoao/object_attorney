@@ -20,6 +20,7 @@ module ObjectAttorney
       end
     
       def rollback(options = {})
+        return true if @represented_object.blank?
         @represented_object.rollback(options)
       end
 
@@ -42,7 +43,7 @@ module ObjectAttorney
       private #################### PRIVATE METHODS DOWN BELOW ######################
 
       def evoke_method_on_object(object, method, options = {})
-        object.send(method)
+        object.send(method, options)
       end
 
     end
