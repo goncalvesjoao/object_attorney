@@ -9,32 +9,28 @@ module ObjectAttorney
       try_or_return(@represented_object, :persisted?, false)
     end
 
-    def save(options = {})
-      save!(options, :save)
+    def save
+      save!(:save)
     end
 
-    def save!(options = {}, save_method = :save!)
+    def save!(save_method = :save!)
       before_save
-      save_result = valid? ? save_after_validations(save_method, options) : false
+      save_result = valid? ? save_after_validations(save_method) : false
       after_save if valid? && save_result
       save_result
     end
 
-    def destroy(options = {})
+    def destroy
       return true if @represented_object.blank?
-      evoke_method_on_object(@represented_object, :destroy, options)
+      evoke_method_on_object(@represented_object, :destroy)
     end
 
-    def rollback(options = {})
-      @represented_object.rollback(options)
-    end
-
-    def call_save_or_destroy(object, save_method, options = {})
+    def call_save_or_destroy(object, save_method)
       if object == self
-        @represented_object.present? ? evoke_method_on_object(@represented_object, save_method, options) : true
+        @represented_object.present? ? evoke_method_on_object(@represented_object, save_method) : true
       else
         save_method = :destroy if check_if_marked_for_destruction?(object)
-        evoke_method_on_object(object, save_method, options)
+        evoke_method_on_object(object, save_method)
       end
     end
 
@@ -43,9 +39,9 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def save_after_validations(save_method, options = {})
+    def save_after_validations(save_method)
       return true if @represented_object.blank?
-      evoke_method_on_object(@represented_object, save_method, options)
+      evoke_method_on_object(@represented_object, save_method)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
@@ -54,12 +50,8 @@ module ObjectAttorney
       object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
     end
 
-    def evoke_method_on_object(object, method, options = {})
-      #if object.instance_method(method).arity > 1
-        object.send(method, options)
-      #else
-        # object.send(method)
-      #end
+    def evoke_method_on_object(object, method)
+      object.send(method)
     end
 
   end
