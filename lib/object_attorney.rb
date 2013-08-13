@@ -87,10 +87,10 @@ module ObjectAttorney
   module ClassMethods
 
     def represents(represented_object, represented_object_class = nil)
-      represented_object_class ||= represented_object.to_s.camelize
+      represented_object_class ||= represented_object.to_s.camelize.constantize
 
       define_method(represented_object) do
-        @represented_object ||= represented_object_class.constantize.new
+        @represented_object ||= represented_object_class.new
       end
     end
 
