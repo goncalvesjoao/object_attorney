@@ -18,11 +18,6 @@ module ObjectAttorney
         return true if @represented_object.blank?
         evoke_method_on_object(@represented_object, :destroy, options)
       end
-    
-      def rollback(options = {})
-        return true if @represented_object.blank?
-        @represented_object.rollback(options)
-      end
 
       def call_save_or_destroy(object, save_method, options = {})
         if object == self || object == @represented_object
