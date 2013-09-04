@@ -59,8 +59,6 @@ module ObjectAttorney
   private #################### PRIVATE METHODS DOWN BELOW ######################
 
   def self.included(base)
-    base.extend(ClassMethods)
-
     base.class_eval do
       include ActiveModel::Validations
       include ActiveModel::Conversion
@@ -73,6 +71,8 @@ module ObjectAttorney
         override_validations? ? true : super
       end
     end
+
+    base.extend(ClassMethods)
   end
 
   def override_validations?
@@ -87,11 +87,15 @@ module ObjectAttorney
   module ClassMethods
 
     def represents(represented_object, represented_object_class = nil)
-      represented_object_class ||= represented_object.to_s.camelize.constantize
+      @represented_object_class = represented_object_class || represented_object.to_s.camelize.constantize
 
       define_method(represented_object) do
-        @represented_object ||= represented_object_class.new
+        @represented_object ||= self.class.represented_object_class.new
       end
+    end
+
+    def represented_object_class
+      @represented_object_class
     end
 
     def delegate_properties(*properties, options)
@@ -116,6 +120,19 @@ module ObjectAttorney
 
     def black_list
       @black_list ||= ["_destroy"]
+    end
+
+    def human_attribute_name(attribute_key_name, options = {})
+      defaults = ["#{represented_object_class.name.underscore}.#{attribute_key_name}"]
+      defaults << options[:default] if options[:default]
+      defaults.flatten!
+      defaults << attribute_key_name.to_s.humanize
+      options[:count] ||= 1
+      I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:activerecord, :attributes]))
+    end
+
+    def model_name
+      ActiveModel::Name.new represented_object_class
     end
 
   end
