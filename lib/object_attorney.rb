@@ -123,18 +123,21 @@ module ObjectAttorney
     end
 
     def human_attribute_name(attribute_key_name, options = {})
-      if represented_object_class.respond_to?(:human_attribute_name)
-        represented_object_class.human_attribute_name(attribute_key_name, options)
-      else
-        defaults = []
-        defaults << "#{represented_object_class.name.underscore}.#{attribute_key_name}" if represented_object_class.present?
-        defaults << "#{name.underscore}.#{attribute_key_name}"
-        defaults << options[:default] if options[:default]
-        defaults.flatten!
-        defaults << attribute_key_name.to_s.humanize
-        options[:count] ||= 1
-        I18n.translate(defaults.shift, options.merge(:default => defaults, :scope => [:activerecord, :attributes]))
+      no_translation = "-- no translation --"
+      
+      defaults = ["object_attorney.attributes.#{name.underscore}.#{attribute_key_name}".to_sym]
+      defaults << options[:default] if options[:default]
+      defaults.flatten!
+      defaults << no_translation
+      options[:count] ||= 1
+      
+      translation = I18n.translate(defaults.shift, options.merge(default: defaults))
+
+      if translation == no_translation && represented_object_class.respond_to?(:human_attribute_name)
+        translation = represented_object_class.human_attribute_name(attribute_key_name, options)
       end
+
+      translation
     end
 
     def model_name
