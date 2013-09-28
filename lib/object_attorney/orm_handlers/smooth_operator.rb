@@ -32,7 +32,7 @@ module ObjectAttorney
 
       def save_after_validations(save_method, options = {})
         return true if @represented_object.blank?
-        evoke_method_on_object(@represented_object, save_method, options)
+        evoke_method_on_object(@represented_object, save_method, options).ok?
       end
 
       private #################### PRIVATE METHODS DOWN BELOW ######################
