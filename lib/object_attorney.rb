@@ -61,6 +61,7 @@ module ObjectAttorney
   def self.included(base)
     base.class_eval do
       include ActiveModel::Validations
+      include ActiveModel::Validations::Callbacks
       include ActiveModel::Conversion
       include ObjectAttorney::NestedObjects
       include ObjectAttorney::ORM
