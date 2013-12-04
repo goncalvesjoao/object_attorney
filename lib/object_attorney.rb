@@ -130,8 +130,8 @@ module ObjectAttorney
       
       translation = I18n.translate(defaults.shift, options.merge(default: defaults))
 
-      if translation == no_translation && represented_object_class.respond_to?(:human_attribute_name)
-        translation = represented_object_class.human_attribute_name(attribute_key_name, options)
+      if translation == no_translation && @@represented_object_class.respond_to?(:human_attribute_name)
+        translation = @@represented_object_class.human_attribute_name(attribute_key_name, options)
       end
 
       translation
@@ -142,7 +142,7 @@ module ObjectAttorney
         namespace = self.parents.detect do |n|
           n.respond_to?(:use_relative_model_naming?) && n.use_relative_model_naming?
         end
-        ActiveModel::Name.new(represented_object_class || self, namespace)
+        ActiveModel::Name.new(@@represented_object_class || self, namespace)
       end
     end
 
