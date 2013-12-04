@@ -2,7 +2,7 @@ module ObjectAttorney
   module NestedObjects
 
     def nested_objects
-      @@nested_objects.map { |nested_object_sym| self.send(nested_object_sym) }.flatten
+      self.class.instance_variable_get("@nested_objects").map { |nested_object_sym| self.send(nested_object_sym) }.flatten
     end
 
     def mark_for_destruction
@@ -31,7 +31,7 @@ module ObjectAttorney
     end
 
     def import_nested_objects_errors
-      @@nested_objects.map do |nested_object_sym|
+      self.class.instance_variable_get("@nested_objects").map do |nested_object_sym|
         
         [*self.send(nested_object_sym)].each do |nested_object|
           nested_object.errors.full_messages.each { |message| self.errors.add(nested_object_sym, message) }
@@ -55,7 +55,7 @@ module ObjectAttorney
         validate :validate_nested_objects
       end
 
-      @@nested_objects = []
+      base.instance_variable_set("@nested_objects", [])
     end
 
     def attributes_without_destroy(attributes)

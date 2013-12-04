@@ -35,7 +35,7 @@ module ObjectAttorney
     respond_to?(attribute) ? send(attribute) : nil
   end
 
-  protected #################### PROTECTED METHODS DOWN BELOW ######################
+  protected #--------------------------------------------------protected
 
   def allowed_attribute(attribute)
     attribute = attribute.to_s
@@ -88,11 +88,15 @@ module ObjectAttorney
   module ClassMethods
 
     def represents(represented_object, represented_object_class = nil)
-      @@represented_object_class = represented_object_class || represented_object.to_s.camelize.constantize
+      @represented_object_class = represented_object_class || represented_object.to_s.camelize.constantize
 
       define_method(represented_object) do
-        @represented_object ||= @@represented_object_class.new
+        @represented_object ||= self.class.represented_object_class.new
       end
+    end
+
+    def represented_object_class
+      @represented_object_class
     end
 
     def delegate_properties(*properties, options)
@@ -104,19 +108,19 @@ module ObjectAttorney
     end
 
     def attr_white_list=(*white_list)
-      @@white_list = white_list.map(&:to_s)
+      @white_list = white_list.map(&:to_s)
     end
 
     def white_list
-      @@white_list ||= []
+      @white_list ||= []
     end
 
     def attr_black_list(*black_list)
-      @@black_list = black_list.map(&:to_s)
+      @black_list = black_list.map(&:to_s)
     end
 
     def black_list
-      @@black_list ||= ["_destroy"]
+      @black_list ||= ["_destroy"]
     end
 
     def human_attribute_name(attribute_key_name, options = {})
@@ -130,19 +134,19 @@ module ObjectAttorney
       
       translation = I18n.translate(defaults.shift, options.merge(default: defaults))
 
-      if translation == no_translation && @@represented_object_class.respond_to?(:human_attribute_name)
-        translation = @@represented_object_class.human_attribute_name(attribute_key_name, options)
+      if translation == no_translation && represented_object_class.respond_to?(:human_attribute_name)
+        translation = represented_object_class.human_attribute_name(attribute_key_name, options)
       end
 
       translation
     end
 
     def model_name
-      @@_model_name ||= begin
+      @_model_name ||= begin
         namespace = self.parents.detect do |n|
           n.respond_to?(:use_relative_model_naming?) && n.use_relative_model_naming?
         end
-        ActiveModel::Name.new(@@represented_object_class || self, namespace)
+        ActiveModel::Name.new(represented_object_class || self, namespace)
       end
     end
 
