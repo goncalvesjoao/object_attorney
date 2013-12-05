@@ -15,13 +15,13 @@ module ObjectAttorney
       end
 
       def destroy(options = {})
-        return true if @represented_object.blank?
-        evoke_method_on_object(@represented_object, :destroy, options)
+        return true if represented_object.blank?
+        evoke_method_on_object(represented_object, :destroy, options)
       end
 
       def call_save_or_destroy(object, save_method, options = {})
-        if object == self || object == @represented_object
-          @represented_object.present? ? evoke_method_on_object(@represented_object, save_method, options) : true
+        if object == self || object == represented_object
+          represented_object.present? ? evoke_method_on_object(represented_object, save_method, options) : true
         else
           save_method = :destroy if check_if_marked_for_destruction?(object)
           evoke_method_on_object(object, save_method, options)
@@ -31,8 +31,8 @@ module ObjectAttorney
       protected #################### PROTECTED METHODS DOWN BELOW ######################
 
       def save_after_validations(save_method, options = {})
-        return true if @represented_object.blank?
-        evoke_method_on_object(@represented_object, save_method, options).ok?
+        return true if represented_object.blank?
+        evoke_method_on_object(represented_object, save_method, options).ok?
       end
 
       private #################### PRIVATE METHODS DOWN BELOW ######################

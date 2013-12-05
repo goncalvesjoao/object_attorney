@@ -5,10 +5,9 @@ gemspec
 
 group :development, :test do
   gem "rspec", "~> 2.11"
-
   gem "sqlite3"
   gem "activerecord"
-
+  gem 'database_cleaner'
   gem "pry"
 
   unless ENV["CI"]

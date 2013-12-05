@@ -4,11 +4,11 @@ module ObjectAttorney
   module ORM
   
     def new_record?
-      try_or_return(@represented_object, :new_record?, true)
+      try_or_return(represented_object, :new_record?, true)
     end
 
     def persisted?
-      try_or_return(@represented_object, :persisted?, false)
+      try_or_return(represented_object, :persisted?, false)
     end
 
     def save
@@ -23,13 +23,13 @@ module ObjectAttorney
     end
 
     def destroy
-      return true if @represented_object.blank?
-      evoke_method_on_object(@represented_object, :destroy)
+      return true if represented_object.blank?
+      evoke_method_on_object(represented_object, :destroy)
     end
 
     def call_save_or_destroy(object, save_method)
       if object == self
-        @represented_object.present? ? evoke_method_on_object(@represented_object, save_method) : true
+        represented_object.present? ? evoke_method_on_object(represented_object, save_method) : true
       else
         save_method = :destroy if check_if_marked_for_destruction?(object)
         evoke_method_on_object(object, save_method)
@@ -42,8 +42,8 @@ module ObjectAttorney
     def after_save; end
 
     def save_after_validations(save_method)
-      return true if @represented_object.blank?
-      evoke_method_on_object(@represented_object, save_method)
+      return true if represented_object.blank?
+      evoke_method_on_object(represented_object, save_method)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################

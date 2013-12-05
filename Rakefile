@@ -2,7 +2,7 @@ require "bundler/gem_tasks"
 require 'active_record'
 require 'yaml'
 
-ENV["RAILS_ENV"] ||= 'development'
+ENV["RAILS_ENV"] ||= 'test'
 
 task :default => :migrate
  
@@ -13,5 +13,5 @@ end
  
 task :environment do
   ActiveRecord::Base.establish_connection(YAML::load(File.open('config/database.yml'))[ENV["RAILS_ENV"]])
-  #ActiveRecord::Base.logger = Logger.new(File.open('tmp/database.log', 'a'))
+  ActiveRecord::Base.logger = Logger.new(File.open('tmp/database.log', 'a'))
 end

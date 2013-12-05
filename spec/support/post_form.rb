@@ -6,8 +6,8 @@ class PostForm
 
   delegate_properties :title, :body, to: :post
 
-  attr_accessor :publish
+  attr_accessor :state
 
-  validates_presence_of :publish
+  validates_presence_of :state
 
 end

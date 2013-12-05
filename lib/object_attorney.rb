@@ -48,13 +48,17 @@ module ObjectAttorney
   end
 
   def validate_represented_object
-    valid = override_validations? ? true : try_or_return(@represented_object, :valid?, true)
+    valid = override_validations? ? true : try_or_return(represented_object, :valid?, true)
     import_represented_object_errors unless valid
     valid
   end
 
   def import_represented_object_errors
-    @represented_object.errors.each { |key, value| self.errors.add(key, value) }
+    represented_object.errors.each { |key, value| self.errors.add(key, value) }
+  end
+
+  def represented_object
+    @represented_object ||= self.class.represented_object_class.new
   end
 
   private #################### PRIVATE METHODS DOWN BELOW ######################
@@ -92,11 +96,11 @@ module ObjectAttorney
 
   module ClassMethods
 
-    def represents(represented_object, represented_object_class = nil)
-      self.instance_variable_set("@represented_object_class", represented_object_class || represented_object.to_s.camelize.constantize)
+    def represents(represented_object_name, represented_object_class = nil)
+      self.instance_variable_set("@represented_object_class", represented_object_class || represented_object_name.to_s.camelize.constantize)
 
-      define_method(represented_object) do
-        @represented_object ||= self.class.represented_object_class.new
+      define_method(represented_object_name) do
+        represented_object
       end
     end
 
