@@ -1,3 +1,5 @@
+
+# see: http://iain.nl/testing-activerecord-in-isolation
 module ActiveModel::Validations
   # Extension to enhance `should have` on AR Model instances.  Calls
   # model.valid? in order to prepare the object's errors object.

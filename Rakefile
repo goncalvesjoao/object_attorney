@@ -1,5 +1,6 @@
 require "bundler/gem_tasks"
 
+# see: http://blog.aizatto.com/2007/05/27/activerecord-migrations-without-rails/
 # require 'active_record'
 # require 'yaml'
 

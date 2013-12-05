@@ -7,14 +7,14 @@ describe PostForm do
     post.should have(1).error_on(:title)
     post.title = "My title"
     post.should have(:no).errors_on(:title)
-    
+
     post_form = PostForm.new({ state: 'draft' })
     post_form.should have(1).error_on(:title)
     post_form.title = "My title"
     post_form.should have(:no).errors_on(:title)
   end
 
-  it "PostForm may require the presence of fields that Post doesn't" do
+  it "PostForm may require the validations of fields that Post doesn't have" do
     params = { post: { title: "My title" } }
 
     post = Post.new(params[:post])

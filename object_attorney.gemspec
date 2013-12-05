@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = ObjectAttorney::VERSION
   spec.authors       = ["João Gonçalves"]
   spec.email         = ["goncalves.joao@gmail.com"]
-  spec.description   = %q{Form Object Patter Implementation}
-  spec.summary       = %q{This gem allows you to extract the code responsible for Validations, Nested Objects and Forms, from your model, into a specific class for a specific use case.}
+  spec.description   = %q{Form Object pattern implementation for Rails}
+  spec.summary       = %q{This gem allows you to extract the code responsible for 'validations', 'nested objects' and 'strong parameters' from your model onto a specific class for a specific use case.}
   spec.homepage      = "https://github.com/goncalvesjoao/object_attorney"
   spec.license       = "MIT"
 
