@@ -2,7 +2,7 @@ module ObjectAttorney
   module NestedObjects
 
     def nested_objects
-      self.class.instance_variable_get("@nested_objects").map { |nested_object_sym| self.send(nested_object_sym) }.flatten
+      self.class.nested_objects.map { |nested_object_sym| self.send(nested_object_sym) }.flatten
     end
 
     def mark_for_destruction
@@ -31,7 +31,7 @@ module ObjectAttorney
     end
 
     def import_nested_objects_errors
-      self.class.instance_variable_get("@nested_objects").map do |nested_object_sym|
+      self.class.nested_objects.map do |nested_object_sym|
         
         [*self.send(nested_object_sym)].each do |nested_object|
           nested_object.errors.full_messages.each { |message| self.errors.add(nested_object_sym, message) }
@@ -54,8 +54,6 @@ module ObjectAttorney
       base.class_eval do
         validate :validate_nested_objects
       end
-
-      base.instance_variable_set("@nested_objects", [])
     end
 
     def attributes_without_destroy(attributes)
@@ -120,6 +118,10 @@ module ObjectAttorney
 
       def reflect_on_association(association)
         nil
+      end
+
+      def nested_objects
+        self.instance_variable_get("@nested_objects") || []
       end
 
       private #################### PRIVATE METHODS DOWN BELOW ######################

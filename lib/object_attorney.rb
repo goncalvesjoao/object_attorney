@@ -1,6 +1,7 @@
 require "object_attorney/version"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
+require 'active_record'
 
 module ObjectAttorney
 
@@ -35,7 +36,7 @@ module ObjectAttorney
     respond_to?(attribute) ? send(attribute) : nil
   end
 
-  protected #--------------------------------------------------protected
+  protected #################### PROTECTED METHODS DOWN BELOW ######################
 
   def allowed_attribute(attribute)
     attribute = attribute.to_s
@@ -85,10 +86,14 @@ module ObjectAttorney
     returning_value.nil? ? default_value : returning_value
   end
 
+  def zuper_method(method_name)
+    
+  end
+
   module ClassMethods
 
     def represents(represented_object, represented_object_class = nil)
-      @represented_object_class = represented_object_class || represented_object.to_s.camelize.constantize
+      self.instance_variable_set("@represented_object_class", represented_object_class || represented_object.to_s.camelize.constantize)
 
       define_method(represented_object) do
         @represented_object ||= self.class.represented_object_class.new
@@ -96,31 +101,31 @@ module ObjectAttorney
     end
 
     def represented_object_class
-      @represented_object_class
+      self.instance_variable_get("@represented_object_class")
     end
 
     def delegate_properties(*properties, options)
-      properties.each { |property| delegate_propertiy(property, options) }
+      properties.each { |property| delegate_property(property, options) }
     end
 
-    def delegate_propertiy(property, options)
+    def delegate_property(property, options)
       delegate property, "#{property}=", options
     end
 
     def attr_white_list=(*white_list)
-      @white_list = white_list.map(&:to_s)
+      self.instance_variable_set("@white_list", white_list.map(&:to_s))
     end
 
     def white_list
-      @white_list ||= []
+      self.instance_variable_get("@white_list") || []
     end
 
     def attr_black_list(*black_list)
-      @black_list = black_list.map(&:to_s)
+      self.instance_variable_set("@black_list", black_list.map(&:to_s))
     end
 
     def black_list
-      @black_list ||= ["_destroy"]
+      self.instance_variable_get("@black_list") || ["_destroy"]
     end
 
     def human_attribute_name(attribute_key_name, options = {})
