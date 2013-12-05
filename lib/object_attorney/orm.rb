@@ -2,6 +2,10 @@ require "object_attorney/orm_handlers/smooth_operator"
 
 module ObjectAttorney
   module ORM
+
+    def id
+      represented_object.try(:id)
+    end
   
     def new_record?
       try_or_return(represented_object, :new_record?, true)
@@ -42,8 +46,18 @@ module ObjectAttorney
     def after_save; end
 
     def save_after_validations(save_method)
+      submit(save_method)
+    end
+
+    def submit(save_method)
+      save_result = save_represented_object(save_method)
+      save_result = save_nested_objects(save_method) if save_result
+      save_result
+    end
+
+    def save_represented_object(save_method)
       return true if represented_object.blank?
-      evoke_method_on_object(represented_object, save_method)
+      call_save_or_destroy(represented_object, save_method)
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################

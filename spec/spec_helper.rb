@@ -9,11 +9,12 @@ require 'rspec'
 require 'pry'
 #require 'database_cleaner'
 
-require "object_attorney"
-require_relative 'support/database_setup'
-require_relative 'support/active_model/validations'
-require_relative 'support/models/post'
-require_relative 'support/models/post_form'
+require 'object_attorney'
+require 'support/database_setup'
+require 'support/active_model/validations'
+require 'support/models/post'
+require 'support/models/post_form'
+require 'support/models/bulk_posts_form'
 
 RSpec.configure do |config|
 

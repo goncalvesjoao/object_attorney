@@ -18,10 +18,16 @@ module ObjectAttorney
 
       _destroy = attributes["_destroy"] || attributes[:_destroy]
 
-      object.mark_for_destruction if ["true", "1"].include?(_destroy)
+      object.mark_for_destruction if ["true", "1", true].include?(_destroy)
     end
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
+
+    def save_nested_objects(save_method)
+      nested_objects.map do |nested_object|
+        call_save_or_destroy(nested_object, save_method)
+      end.all?
+    end
 
     def validate_nested_objects
       #nested_objects.all?(&:valid?) #will not validate all nested_objects
@@ -99,7 +105,7 @@ module ObjectAttorney
 
     def build_new_nested_objects(existing_and_new_nested_objects, nested_object_name)
       (send("#{nested_object_name}_attributes") || {}).values.each do |attributes|
-        next if attributes["id"].present?
+        next if attributes["id"].present? || attributes[:id].present?
 
         new_nested_object = send("build_#{nested_object_name.to_s.singularize}", attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(new_nested_object, attributes)

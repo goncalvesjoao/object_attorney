@@ -58,7 +58,7 @@ module ObjectAttorney
   end
 
   def represented_object
-    @represented_object ||= self.class.represented_object_class.new
+    @represented_object ||= self.class.represented_object_class.try(:new)
   end
 
   private #################### PRIVATE METHODS DOWN BELOW ######################
