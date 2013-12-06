@@ -1,5 +1,3 @@
-require "object_attorney/orm_handlers/smooth_operator"
-
 module ObjectAttorney
   module ORM
 

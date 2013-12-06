@@ -31,8 +31,24 @@ module ObjectAttorney
       protected #################### PROTECTED METHODS DOWN BELOW ######################
 
       def save_after_validations(save_method, options = {})
+        submit(save_method, options)
+      end
+
+      def submit(save_method, options = {})
+        save_result = save_represented_object(save_method, options)
+        save_result = save_nested_objects(save_method) if save_result
+        save_result
+      end
+
+      def save_represented_object(save_method, options = {})
         return true if represented_object.blank?
-        evoke_method_on_object(represented_object, save_method, options).ok?
+        call_save_or_destroy(represented_object, save_method, options)
+      end
+
+      def save_nested_objects(save_method, options = {})
+        nested_objects.map do |nested_object|
+          call_save_or_destroy(nested_object, save_method, options)
+        end.all?
       end
 
       private #################### PRIVATE METHODS DOWN BELOW ######################
