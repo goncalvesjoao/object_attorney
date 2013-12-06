@@ -127,7 +127,7 @@ module ObjectAttorney
       end
 
       def nested_objects
-        self.instance_variable_get("@nested_objects") || []
+        self.instance_variable_get("@nested_objects") || zuper_method('nested_objects') || []
       end
 
       private #################### PRIVATE METHODS DOWN BELOW ######################

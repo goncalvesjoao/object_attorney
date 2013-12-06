@@ -40,11 +40,7 @@ module ObjectAttorney
 
   def allowed_attribute(attribute)
     attribute = attribute.to_s
-
-    return false  if !respond_to?("#{attribute}=") || self.class.black_list.include?(attribute)
-    return true   if self.class.white_list.empty?
-
-    self.class.white_list.include?(attribute)
+    respond_to?("#{attribute}=")
   end
 
   def validate_represented_object
@@ -90,10 +86,6 @@ module ObjectAttorney
     returning_value.nil? ? default_value : returning_value
   end
 
-  def zuper_method(method_name)
-    
-  end
-
   module ClassMethods
 
     def represents(represented_object_name, represented_object_class = nil)
@@ -105,7 +97,11 @@ module ObjectAttorney
     end
 
     def represented_object_class
-      self.instance_variable_get("@represented_object_class")
+      self.instance_variable_get("@represented_object_class") || zuper_method('represented_object_class')
+    end
+
+    def zuper_method(method_name, *args)
+      self.superclass.send(method_name, *args) if self.superclass.respond_to?(method_name)
     end
 
     def delegate_properties(*properties, options)
@@ -114,22 +110,6 @@ module ObjectAttorney
 
     def delegate_property(property, options)
       delegate property, "#{property}=", options
-    end
-
-    def attr_white_list=(*white_list)
-      self.instance_variable_set("@white_list", white_list.map(&:to_s))
-    end
-
-    def white_list
-      self.instance_variable_get("@white_list") || []
-    end
-
-    def attr_black_list(*black_list)
-      self.instance_variable_set("@black_list", black_list.map(&:to_s))
-    end
-
-    def black_list
-      self.instance_variable_get("@black_list") || ["_destroy"]
     end
 
     def human_attribute_name(attribute_key_name, options = {})

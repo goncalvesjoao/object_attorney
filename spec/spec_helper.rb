@@ -14,7 +14,9 @@ require 'support/database_setup'
 require 'support/active_model/validations'
 require 'support/models/post'
 require 'support/models/post_form'
+require 'support/models/post_form_child'
 require 'support/models/bulk_posts_form'
+require 'support/models/bulk_posts_form_child'
 
 RSpec.configure do |config|
 
