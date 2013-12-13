@@ -42,12 +42,12 @@ module ObjectAttorney
 
       def save_represented_object(save_method, options = {})
         return true if represented_object.blank?
-        call_save_or_destroy(represented_object, save_method, options)
+        call_save_or_destroy(represented_object, save_method, options).ok?
       end
 
       def save_nested_objects(save_method, options = {})
         nested_objects.map do |nested_object|
-          call_save_or_destroy(nested_object, save_method, options)
+          call_save_or_destroy(nested_object, save_method, options).ok?
         end.all?
       end
 
