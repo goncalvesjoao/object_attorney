@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe BulkPostsFormChild do
 
-  it "Creating multiple Posts, with a tabless model 'BulkPostsFormChild' has if it had 'accepts_nested_attributes_for :posts'" do
+  it "Creating multiple Posts, with a tabless model 'BulkPostsFormChild' has if it had 'accepts_nested_attributes_for :posts'", current: true do
     params = {
       bulk_post: {
         admin: true,

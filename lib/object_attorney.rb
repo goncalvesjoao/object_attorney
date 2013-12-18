@@ -1,5 +1,6 @@
 require "object_attorney/version"
 require "object_attorney/helpers"
+require "object_attorney/association_reflection"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 require 'active_record'
@@ -84,16 +85,18 @@ module ObjectAttorney
 
   module ClassMethods
 
-    def represents(represented_object_name, represented_object_class = nil)
-      self.instance_variable_set("@represented_object_class", represented_object_class || represented_object_name.to_s.camelize.constantize)
+    def represents(represented_object_name, options = {})
+      self.instance_variable_set("@represented_object_reflection", AssociationReflection.new(represented_object_name, options))
 
-      define_method(represented_object_name) do
-        represented_object
-      end
+      define_method(represented_object_name) { represented_object }
+    end
+
+    def represented_object_reflection
+      self.instance_variable_get("@represented_object_reflection") || zuper_method('represented_object_reflection')
     end
 
     def represented_object_class
-      self.instance_variable_get("@represented_object_class") || zuper_method('represented_object_class')
+      represented_object_reflection.try(:klass)
     end
 
     def zuper_method(method_name, *args)

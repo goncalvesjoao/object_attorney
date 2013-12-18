@@ -8,8 +8,8 @@ class BulkPostsFormChild < BulkPostsForm
 
   ##################### BODY BELLOW THIS LINE ####################
 
-  def build_item(attributes = {}, post = nil)
-    Post.new(attributes, post)
+  def build_item(attributes = {}, item = nil)
+    Item.new(attributes, item)
   end
 
   def existing_items
