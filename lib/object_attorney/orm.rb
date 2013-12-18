@@ -6,11 +6,11 @@ module ObjectAttorney
     end
   
     def new_record?
-      try_or_return(represented_object, :new_record?, true)
+      Helpers.try_or_return(represented_object, :new_record?, true)
     end
 
     def persisted?
-      try_or_return(represented_object, :persisted?, false)
+      Helpers.try_or_return(represented_object, :persisted?, false)
     end
 
     def save

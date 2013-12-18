@@ -49,7 +49,7 @@ describe BulkPostsFormChild do
         }
       }
     }
-
+    
     existing_post = Post.create(title: "My title1")
     BulkPostsFormChild.new(params[:bulk_post]).save
     existing_post.reload

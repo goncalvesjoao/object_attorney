@@ -1,4 +1,5 @@
 require "object_attorney/version"
+require "object_attorney/helpers"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 require 'active_record'
@@ -44,7 +45,7 @@ module ObjectAttorney
   end
 
   def validate_represented_object
-    valid = override_validations? ? true : try_or_return(represented_object, :valid?, true)
+    valid = override_validations? ? true : Helpers.try_or_return(represented_object, :valid?, true)
     import_represented_object_errors unless valid
     valid
   end
@@ -79,11 +80,6 @@ module ObjectAttorney
 
   def override_validations?
     marked_for_destruction?
-  end
-
-  def try_or_return(object, method, default_value)
-    returning_value = object.try(method)
-    returning_value.nil? ? default_value : returning_value
   end
 
   module ClassMethods
