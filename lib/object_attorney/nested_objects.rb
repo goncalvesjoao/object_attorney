@@ -120,23 +120,21 @@ module ObjectAttorney
 
       def accepts_nested_objects(*nested_objects_list)
         nested_objects_list.each do |association|
-          self.class_variable_set("@@#{association}_reflection", RecordAssociationReflection.new_from_sym(association))
+          self.instance_variable_set("@#{association}_reflection", RecordAssociationReflection.new_from_sym(association))
         end
 
         self.send(:attr_accessor, *nested_objects_list.map { |attribute| "#{attribute}_attributes".to_sym })
         define_nested_objects_getter_methods nested_objects_list
 
         current_nested_objects_list = nested_objects | nested_objects_list
-        #@@nested_objects = current_nested_objects_list
         self.instance_variable_set("@nested_objects", current_nested_objects_list)
       end
 
       def reflect_on_association(association)
-        self.class_variable_get("@@#{association}_reflection")
+        self.instance_variable_get("@#{association}_reflection") || zuper_method('reflect_on_association', association)
       end
 
       def nested_objects
-        #defined?(@@nested_objects) ? @@nested_objects : []
         self.instance_variable_get("@nested_objects") || zuper_method('nested_objects') || []
       end
 
