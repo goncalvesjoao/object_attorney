@@ -93,7 +93,7 @@ module ObjectAttorney
     end
 
     def update_existing_nested_objects(existing_and_new_nested_objects, nested_object_name)
-      (send("existing_#{nested_object_name}") || []).each do |existing_nested_object|
+      send("existing_#{nested_object_name}").each do |existing_nested_object|
         attributes = get_attributes_for_existing(nested_object_name, existing_nested_object)
 
         mark_for_destruction_if_necessary(existing_nested_object, attributes)
@@ -108,21 +108,53 @@ module ObjectAttorney
         next if attributes["id"].present? || attributes[:id].present?
 
         new_nested_object = send("build_#{nested_object_name.to_s.singularize}", attributes_without_destroy(attributes))
-        mark_for_destruction_if_necessary(new_nested_object, attributes)
+        next unless new_nested_object
 
+        mark_for_destruction_if_necessary(new_nested_object, attributes)
         existing_and_new_nested_objects << new_nested_object
       end
     end
 
+    def build_nested_object(nested_object_name, attributes = {}, existing_nested_object = nil)
+      reflection = self.class.reflect_on_association(nested_object_name)
+      
+      new_nested_object = existing_nested_object || reflection.klass.new
+      new_nested_object.assign_attributes(attributes)
+
+      new_nested_object
+    end
+
+    def existing_nested_objects(nested_object_name)
+      reflection = self.class.reflect_on_association(nested_object_name)
+      
+      represented_object.send(nested_object_name)
+    end
+
     module ClassMethods
 
+      def accepts_nested_object(nested_object_name, options = {})
+        options = {} unless options.is_a?(Hash)
+        options[:macro] = :belongs_to
+        _accepts_nested_objects(nested_object_name, options)
+      end
+
       def accepts_nested_objects(nested_object_name, options = {})
+        options = {} unless options.is_a?(Hash)
+        options[:macro] = :has_many
+        _accepts_nested_objects(nested_object_name, options)
+      end
+
+      def _accepts_nested_objects(nested_object_name, options = {})
         reflection = AssociationReflection.new(nested_object_name, options)
+
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
         self.instance_variable_set("@association_reflections", association_reflections | [reflection])
 
         self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
+
         define_method(nested_object_name) { nested_getter(nested_object_name) }
+        define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes, nested_object) }
+        define_method("existing_#{reflection.plural_name}") { existing_nested_objects(nested_object_name) }
       end
 
       def association_reflections

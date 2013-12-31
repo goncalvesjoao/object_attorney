@@ -4,6 +4,10 @@ module ObjectAttorney
 
     extend self
 
+    def is_integer?(string)
+      string.match(/^(\d)+$/)
+    end
+
     def plural?(string)
       string = string.to_s
       string == string.pluralize

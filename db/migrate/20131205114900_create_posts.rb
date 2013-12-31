@@ -3,7 +3,7 @@ class CreatePosts < ActiveRecord::Migration
     create_table :posts do |t|
       t.string :title
       t.text :body
-      t.boolean :admin, default: false
+      t.integer :user_id
       t.timestamps
     end
   end

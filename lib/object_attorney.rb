@@ -7,23 +7,20 @@ require 'active_record'
 
 module ObjectAttorney
 
-  def initialize(attributes = {}, object = nil, options = {})
-    if !attributes.kind_of?(Hash) && object.blank?
+  def initialize(attributes = {}, object = nil)
+    if !attributes.is_a?(Hash) && object.blank?
       object = attributes
       attributes = nil
     end
 
     attributes = {} if attributes.blank?
 
-    if !attributes.include?("id") && object.kind_of?(String)
-      attributes["id"] = object
-      object = nil
-    end
-
     @represented_object = object if object.present?
 
     assign_attributes attributes
     mark_for_destruction_if_necessary(self, attributes)
+
+    init(attributes)
   end
 
   def assign_attributes(attributes = {})
@@ -40,8 +37,9 @@ module ObjectAttorney
 
   protected #################### PROTECTED METHODS DOWN BELOW ######################
 
+  def init(attributes); end
+
   def allowed_attribute(attribute)
-    attribute = attribute.to_s
     respond_to?("#{attribute}=")
   end
 
