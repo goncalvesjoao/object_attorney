@@ -1,3 +1,5 @@
+require "object_attorney/association_reflection"
+
 module ObjectAttorney
   module NestedObjects
 
@@ -34,11 +36,11 @@ module ObjectAttorney
     def save_or_destroy_nested_objects(save_method, association_macro)
       nested_objects(association_macro).map do |reflection, nested_object|
         
-        populate_foreign_key(self, nested_object, reflection, :has_many) if association_macro == :has_many
+        populate_foreign_key(self, nested_object, reflection, :has_many)
 
         saving_result = call_save_or_destroy(nested_object, save_method)
 
-        populate_foreign_key(nested_object, self, reflection, :belongs_to) if association_macro == :belongs_to
+        populate_foreign_key(self, nested_object, reflection, :belongs_to)
 
         saving_result
 
@@ -69,19 +71,9 @@ module ObjectAttorney
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
     def populate_foreign_key(origin, destination, reflection, macro)
-      return nil if represented_object.blank? || check_if_marked_for_destruction?(destination)
+      return nil if represented_object.blank? || check_if_marked_for_destruction?(destination) || reflection.macro != macro
 
-      if macro == :has_many
-        setter = "#{self.class.represented_object_reflection.single_name}_id="
-      elsif macro == :belongs_to
-        setter = "#{reflection.single_name}_id="
-      end
-
-      if destination.respond_to?(setter)
-        destination.send(setter, origin.id)
-      elsif destination.respond_to?("send_to_representative")
-        destination.send_to_representative(setter, origin.id)
-      end
+      reflection.set_relational_keys(origin, destination)
     end
 
     def self.included(base)
@@ -150,7 +142,7 @@ module ObjectAttorney
       
       new_nested_object = reflection.klass.new(attributes)
 
-      populate_foreign_key(self, new_nested_object, reflection, :has_many) if reflection.has_many?
+      populate_foreign_key(self, new_nested_object, reflection, :has_many)
 
       new_nested_object
     end
@@ -178,7 +170,7 @@ module ObjectAttorney
       end
 
       def _accepts_nested_objects(nested_object_name, options = {})
-        reflection = AssociationReflection.new(nested_object_name, options)
+        reflection = AssociationReflection.new(nested_object_name, represented_object_reflection, options)
 
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
         self.instance_variable_set("@association_reflections", association_reflections | [reflection])

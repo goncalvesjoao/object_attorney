@@ -1,16 +1,45 @@
 module ObjectAttorney
 
-  class AssociationReflection
-    attr_reader :klass, :macro, :options, :name, :single_name, :plural_name
+  class AssociationReflection < Reflection
+    attr_reader :related_reflection
 
-    def initialize(association, options)
-      options = options.is_a?(Hash) ? options : { class_name: options }
+    def initialize(association, related_reflection, options)
+      super(association, options)
+      @related_reflection = related_reflection
+    end
+
+    def macro
+      @macro ||= options[:macro] || macro_default(association)
+    end
+
+    def primary_key
+      @primary_key ||= options[:primary_key] || :id
+    end
+
+    def foreign_key
+      @foreign_key ||= options[:foreign_key] || foreign_key_default
+    end
+
+    def set_relational_keys(origin, destination)
+      if has_many?
+        set_foreign_key(destination, primary_key_of(origin))
+      elsif belongs_to?
+        set_foreign_key(origin, primary_key_of(destination))
+      end
+    end
+
+    def set_foreign_key(object, id)
+      setter = "#{foreign_key}="
       
-      @macro = options[:macro] || macro_default(association)
-      @klass = options[:class_name] || klass_default(association)
-      @name, @single_name, @plural_name, @options = association, association.to_s.singularize, association.to_s.pluralize, options
-      
-      @klass = @klass.constantize if @klass.is_a?(String)
+      if object.respond_to?(setter)
+        object.send(setter, id)
+      elsif object.respond_to?("send_to_representative")
+        object.send_to_representative(setter, id)
+      end
+    end
+
+    def primary_key_of(object)
+      object.send(primary_key)
     end
 
     def has_many?
@@ -27,12 +56,12 @@ module ObjectAttorney
       Helpers.plural?(association) ? :has_many : :belongs_to
     end
 
-    def klass_default(association)
-      if Helpers.plural?(association)
-        association.to_s.singularize.camelize
-      else
-        association.to_s.camelize
-      end
+    def foreign_key_default
+      if has_many?
+        "#{related_reflection.single_name}_id"
+      elsif belongs_to?
+        "#{single_name}_id"
+      end.to_sym
     end
 
   end

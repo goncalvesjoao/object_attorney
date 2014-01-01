@@ -1,6 +1,6 @@
 require "object_attorney/version"
 require "object_attorney/helpers"
-require "object_attorney/association_reflection"
+require "object_attorney/reflection"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 require 'active_record'
@@ -90,7 +90,7 @@ module ObjectAttorney
   module ClassMethods
 
     def represents(represented_object_name, options = {})
-      self.instance_variable_set("@represented_object_reflection", AssociationReflection.new(represented_object_name, options))
+      self.instance_variable_set("@represented_object_reflection", Reflection.new(represented_object_name, options))
 
       define_method(represented_object_name) { represented_object }
     end

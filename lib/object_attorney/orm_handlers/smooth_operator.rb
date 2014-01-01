@@ -45,19 +45,21 @@ module ObjectAttorney
         return true if represented_object.blank?
         call_save_or_destroy(represented_object, save_method, options)
       end
-
+      
       def save_or_destroy_nested_objects(save_method, association_macro, options = {})
         nested_objects(association_macro).map do |reflection, nested_object|
-          nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id) if represented_object.present? && association_macro == :has_many
+          
+          populate_foreign_key(self, nested_object, reflection, :has_many)
 
           saving_result = call_save_or_destroy(nested_object, save_method, options)
 
-          self.send("#{reflection.single_name}_id=", nested_object.id) if represented_object.present? && association_macro == :belongs_to
+          populate_foreign_key(nested_object, self, reflection, :belongs_to)
 
           saving_result
+
         end.all?
       end
-      
+
     end
 
   end
