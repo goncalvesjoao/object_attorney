@@ -102,8 +102,14 @@ shared_examples "a PostWithCommentForm" do
     
     Post.first.title.should == 'altered post'
     Comment.all.count.should == 2
-    Comment.find_by_id(2).body.should == 'altered comment'
-    Comment.find_by_id(3).body.should == 'new comment'
+
+    comment = Comment.find_by_id(2)
+    comment.body.should == 'altered comment'
+    comment.post_id.should == 1
+
+    comment = Comment.find_by_id(3)
+    comment.body.should == 'new comment'
+    comment.post_id.should == 1
   end
 
 end

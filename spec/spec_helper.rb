@@ -15,13 +15,14 @@ require 'support/active_model/validations'
 require 'support/models/comment'
 require 'support/models/post'
 require 'support/models/user'
+
+require 'support/form_objects/post'
+require 'support/form_objects/comment'
+require 'support/form_objects/post_with_comment_form'
 require 'support/form_objects/bulk_posts'
 require 'support/form_objects/bulk_posts_allow_only_existing'
 require 'support/form_objects/bulk_posts_allow_only_new'
 require 'support/form_objects/bulk_posts_with_form_objects'
-require 'support/form_objects/comment'
-require 'support/form_objects/post'
-require 'support/form_objects/post_with_comment_form'
 require 'support/form_objects/user'
 
 RSpec.configure do |config|

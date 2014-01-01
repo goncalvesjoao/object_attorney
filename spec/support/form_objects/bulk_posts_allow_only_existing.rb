@@ -4,7 +4,7 @@ module FormObjects
 
     class Base < BulkPosts::Base
 
-      def build_post(attributes = {}, post = nil)
+      def build_post(attributes = {})
         nil
       end
 
@@ -12,7 +12,7 @@ module FormObjects
 
     class Explicit < BulkPosts::Base
 
-      def build_post(attributes = {}, post = nil)
+      def build_post(attributes = {})
         nil
       end
 

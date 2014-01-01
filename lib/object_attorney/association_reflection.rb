@@ -9,8 +9,16 @@ module ObjectAttorney
       @macro = options[:macro] || macro_default(association)
       @klass = options[:class_name] || klass_default(association)
       @name, @single_name, @plural_name, @options = association, association.to_s.singularize, association.to_s.pluralize, options
-
+      
       @klass = @klass.constantize if @klass.is_a?(String)
+    end
+
+    def has_many?
+      macro == :has_many
+    end
+
+    def belongs_to?
+      macro == :belongs_to
     end
 
     private ################################# private

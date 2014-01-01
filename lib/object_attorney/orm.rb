@@ -26,15 +26,15 @@ module ObjectAttorney
 
     def destroy
       return true if represented_object.blank?
-      evoke_method_on_object(represented_object, :destroy)
+      represented_object.destroy
     end
 
     def call_save_or_destroy(object, save_method)
       if object == self
-        represented_object.present? ? evoke_method_on_object(represented_object, save_method) : true
+        represented_object.present? ? represented_object.send(save_method) : true
       else
         save_method = :destroy if check_if_marked_for_destruction?(object)
-        evoke_method_on_object(object, save_method)
+        object.send(save_method)
       end
     end
 
@@ -48,8 +48,9 @@ module ObjectAttorney
     end
 
     def submit(save_method)
-      save_result = save_represented_object(save_method)
-      save_result = save_nested_objects(save_method) if save_result
+      save_result = save_nested_objects(save_method, :belongs_to)
+      save_result = save_represented_object(save_method) if save_result
+      save_result = save_nested_objects(save_method, :has_many) if save_result
       save_result
     end
 
@@ -57,15 +58,23 @@ module ObjectAttorney
       return true if represented_object.blank?
       call_save_or_destroy(represented_object, save_method)
     end
+    
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+
+      def all(*args)
+        represented_object_class.all(*args).map { |represented_object| self.new({}, represented_object) }
+      end
+
+    end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
     def check_if_marked_for_destruction?(object)
       object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
-    end
-
-    def evoke_method_on_object(object, method)
-      object.send(method)
     end
 
   end

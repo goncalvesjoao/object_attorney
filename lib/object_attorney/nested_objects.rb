@@ -1,10 +1,6 @@
 module ObjectAttorney
   module NestedObjects
 
-    def nested_objects
-      self.class.nested_objects.map { |nested_object_sym| self.send(nested_object_sym) }.flatten
-    end
-
     def mark_for_destruction
       @marked_for_destruction = true
     end
@@ -14,35 +10,54 @@ module ObjectAttorney
     end
 
     def mark_for_destruction_if_necessary(object, attributes)
-      return nil unless attributes.kind_of?(Hash)
+      return nil unless attributes.is_a?(Hash)
 
       _destroy = attributes["_destroy"] || attributes[:_destroy]
 
       object.mark_for_destruction if ["true", "1", true].include?(_destroy)
     end
 
+    def nested_objects(macro = nil)
+      nested_objects_list = []
+
+      self.class.reflect_on_all_associations(macro).each do |reflection|
+        [*self.send(reflection.name)].each do |nested_object|
+          nested_objects_list << [reflection, nested_object]
+        end
+      end
+
+      nested_objects_list
+    end
+
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-    def save_nested_objects(save_method)
-      nested_objects.map do |nested_object|
-        call_save_or_destroy(nested_object, save_method)
+    def save_nested_objects(save_method, association_macro)
+      nested_objects(association_macro).map do |reflection, nested_object|
+        
+        if represented_object.present? && association_macro == :has_many
+          nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id)
+        end
+
+        saving_result = call_save_or_destroy(nested_object, save_method)
+
+        self.send("#{reflection.single_name}_id=", nested_object.id) if represented_object.present? && association_macro == :belongs_to
+
+        saving_result
       end.all?
     end
 
     def validate_nested_objects
-      #nested_objects.all?(&:valid?) #will not validate all nested_objects
-      return true if nested_objects.reject(&:marked_for_destruction?).map(&:valid?).all?
+      return true if nested_objects.map do |reflection, nested_object|
+        nested_object.marked_for_destruction? ? true : nested_object.valid?
+      end.all?
+
       import_nested_objects_errors
       false
     end
 
     def import_nested_objects_errors
-      self.class.nested_objects.map do |nested_object_sym|
-        
-        [*self.send(nested_object_sym)].each do |nested_object|
-          nested_object.errors.full_messages.each { |message| self.errors.add(nested_object_sym, message) }
-        end
-
+      nested_objects.each do |reflection, nested_object|
+        nested_object.errors.full_messages.each { |message| self.errors.add(reflection.name, message) }
       end
     end
 
@@ -115,33 +130,38 @@ module ObjectAttorney
       end
     end
 
-    def build_nested_object(nested_object_name, attributes = {}, existing_nested_object = nil)
+    def build_nested_object(nested_object_name, attributes = {})
       reflection = self.class.reflect_on_association(nested_object_name)
       
-      new_nested_object = existing_nested_object || reflection.klass.new
-      new_nested_object.assign_attributes(attributes)
+      new_nested_object = reflection.klass.new(attributes)
+
+      if represented_object.present? && reflection.has_many?
+        new_nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id)
+      end
 
       new_nested_object
     end
 
     def existing_nested_objects(nested_object_name)
-      reflection = self.class.reflect_on_association(nested_object_name)
+      nested_association_klass = self.class.reflect_on_association(nested_object_name).klass
+
+      existing_list = represented_object.blank? ? nested_association_klass.all : (represented_object.send(nested_object_name) || [])
       
-      represented_object.send(nested_object_name)
+      if represented_object.present? && nested_association_klass != self.class.represented_object_class.reflect_on_association(nested_object_name).klass
+        existing_list = existing_list.map { |existing_nested_object| nested_association_klass.new({}, existing_nested_object) }
+      end
+
+      existing_list
     end
 
     module ClassMethods
 
       def accepts_nested_object(nested_object_name, options = {})
-        options = {} unless options.is_a?(Hash)
-        options[:macro] = :belongs_to
-        _accepts_nested_objects(nested_object_name, options)
+        _accepts_nested_objects(nested_object_name, options.merge({ macro: :belongs_to }))
       end
 
       def accepts_nested_objects(nested_object_name, options = {})
-        options = {} unless options.is_a?(Hash)
-        options[:macro] = :has_many
-        _accepts_nested_objects(nested_object_name, options)
+        _accepts_nested_objects(nested_object_name, options.merge({ macro: :has_many }))
       end
 
       def _accepts_nested_objects(nested_object_name, options = {})
@@ -153,7 +173,7 @@ module ObjectAttorney
         self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
 
         define_method(nested_object_name) { nested_getter(nested_object_name) }
-        define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes, nested_object) }
+        define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes) }
         define_method("existing_#{reflection.plural_name}") { existing_nested_objects(nested_object_name) }
       end
 
@@ -167,10 +187,6 @@ module ObjectAttorney
 
       def reflect_on_all_associations(macro = nil)
         macro ? association_reflections.select { |reflection| reflection.macro == macro } : association_reflections
-      end
-
-      def nested_objects
-        association_reflections.map(&:name)
       end
 
     end

@@ -15,10 +15,19 @@ shared_examples "a Post" do
     }
 
     post_form = described_class.new(params[:post])
-    post_form.save
+
+    post_form.save.should == true
     
     Post.all.count.should == 1
-    Comment.all.count.should == 2
+    post = Post.first
+    post.title.should == 'First post'
+    post.body.should == 'post body'
+    
+    post.comments.count.should == 2
+    
+    comment = post.comments.first
+    comment.post_id.should == post.id
+    comment.body.should == 'body1'
   end
 
   it "2. Editing a 'Post' and a nested 'Comment'." do
@@ -40,8 +49,12 @@ shared_examples "a Post" do
     post_form = described_class.new(params[:post], Post.find(params[:id]))
     post_form.save
     
-    Post.first.title.should == 'altered post'
-    Comment.first.body.should == 'altered comment'
+    post = Post.first
+    post.title.should == 'altered post'
+    
+    comment = post.comments.first
+    comment.post_id.should == post.id
+    comment.body.should == 'altered comment'
   end
 
   it "3. Editing a 'Post' and deleting a nested 'Comment'." do
@@ -89,10 +102,17 @@ shared_examples "a Post" do
     post_form = described_class.new(params[:post], Post.find(params[:id]))
     post_form.save
     
-    Post.first.title.should == 'altered post'
-    Comment.all.count.should == 2
-    Comment.find_by_id(2).body.should == 'altered comment'
-    Comment.find_by_id(3).body.should == 'new comment'
+    post = Post.first
+    post.title.should == 'altered post'
+    post.comments.count.should == 2
+
+    comment = post.comments.where(id: 2).first
+    comment.post_id.should == post.id
+    comment.body.should == 'altered comment'
+
+    comment = post.comments.where(id: 3).first
+    comment.post_id.should == post.id
+    comment.body.should == 'new comment'
   end
 
 end

@@ -4,24 +4,18 @@ module FormObjects
 
     class Base < Post::Base
 
-      def build_comment(attributes = {}, comment = nil)
-        FormObjects::Comment.new(attributes, comment || post.comments.new)
-      end
-
-      def existing_comments
-        post.comments.map { |comment| build_comment({}, comment) }
-      end
+      accepts_nested_objects :comments, class_name: FormObjects::Comment
 
     end
     
     class Explicit < Post::Base
 
-      def build_comment(attributes = {}, comment = nil)
-        FormObjects::Comment.new(attributes, comment || post.comments.new)
+      def build_comment(attributes = {})
+        FormObjects::Comment.new(attributes)
       end
 
       def existing_comments
-        post.comments.map { |comment| build_comment({}, comment) }
+        post.comments.map { |comment| FormObjects::Comment.new({}, comment) }
       end
 
     end

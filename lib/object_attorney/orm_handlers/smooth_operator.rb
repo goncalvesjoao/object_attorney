@@ -16,15 +16,15 @@ module ObjectAttorney
 
       def destroy(options = {})
         return true if represented_object.blank?
-        evoke_method_on_object(represented_object, :destroy, options)
+        represented_object.destroy(options).ok?
       end
 
       def call_save_or_destroy(object, save_method, options = {})
         if object == self || object == represented_object
-          represented_object.present? ? evoke_method_on_object(represented_object, save_method, options) : true
+          represented_object.present? ? represented_object.send(save_method, options).ok? : true
         else
           save_method = :destroy if check_if_marked_for_destruction?(object)
-          evoke_method_on_object(object, save_method, options)
+          object.send(save_method, options).ok?
         end
       end
 
@@ -35,28 +35,29 @@ module ObjectAttorney
       end
 
       def submit(save_method, options = {})
-        save_result = save_represented_object(save_method, options)
-        save_result = save_nested_objects(save_method) if save_result
+        save_result = save_nested_objects(save_method, :belongs_to, options)
+        save_result = save_represented_object(save_method, options) if save_result
+        save_result = save_nested_objects(save_method, :has_many, options) if save_result
         save_result
       end
 
       def save_represented_object(save_method, options = {})
         return true if represented_object.blank?
-        call_save_or_destroy(represented_object, save_method, options).ok?
+        call_save_or_destroy(represented_object, save_method, options)
       end
 
-      def save_nested_objects(save_method, options = {})
-        nested_objects.map do |nested_object|
-          call_save_or_destroy(nested_object, save_method, options).ok?
+      def save_nested_objects(save_method, association_macro, options = {})
+        nested_objects(association_macro).map do |reflection, nested_object|
+          nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id) if represented_object.present? && association_macro == :has_many
+
+          saving_result = call_save_or_destroy(nested_object, save_method, options)
+
+          self.send("#{reflection.single_name}_id=", nested_object.id) if represented_object.present? && association_macro == :belongs_to
+
+          saving_result
         end.all?
       end
-
-      private #################### PRIVATE METHODS DOWN BELOW ######################
-
-      def evoke_method_on_object(object, method, options = {})
-        object.send(method, options)
-      end
-
+      
     end
 
   end

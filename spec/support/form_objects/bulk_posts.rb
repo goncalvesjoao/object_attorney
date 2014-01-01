@@ -7,14 +7,6 @@ module FormObjects
       include ObjectAttorney
 
       accepts_nested_objects :posts
-      
-      def build_post(attributes = {}, post = nil)
-        ::Post.new(attributes)
-      end
-
-      def existing_posts
-        ::Post.all
-      end
 
     end
 
@@ -24,7 +16,7 @@ module FormObjects
 
       accepts_nested_objects :posts
       
-      def build_post(attributes = {}, post = nil)
+      def build_post(attributes = {})
         ::Post.new(attributes)
       end
 

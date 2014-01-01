@@ -15,7 +15,8 @@ module FormObjects
       validates_presence_of :title
 
     end
-    
+
+
     class Explicit
 
       include ObjectAttorney
@@ -42,7 +43,7 @@ module FormObjects
         post.title
       end
 
-      def build_comment(attributes = {}, comment = nil)
+      def build_comment(attributes = {})
         post.comments.build(attributes)
       end
 
@@ -51,7 +52,7 @@ module FormObjects
       end
 
     end
-
+    
   end
 
 end
