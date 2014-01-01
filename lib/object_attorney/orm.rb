@@ -48,13 +48,13 @@ module ObjectAttorney
     end
 
     def submit(save_method)
-      save_result = save_nested_objects(save_method, :belongs_to)
-      save_result = save_represented_object(save_method) if save_result
-      save_result = save_nested_objects(save_method, :has_many) if save_result
+      save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
+      save_result = save_or_destroy_represented_object(save_method) if save_result
+      save_result = save_or_destroy_nested_objects(save_method, :has_many) if save_result
       save_result
     end
 
-    def save_represented_object(save_method)
+    def save_or_destroy_represented_object(save_method)
       return true if represented_object.blank?
       call_save_or_destroy(represented_object, save_method)
     end

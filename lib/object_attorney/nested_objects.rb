@@ -31,18 +31,17 @@ module ObjectAttorney
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-    def save_nested_objects(save_method, association_macro)
+    def save_or_destroy_nested_objects(save_method, association_macro)
       nested_objects(association_macro).map do |reflection, nested_object|
         
-        if represented_object.present? && association_macro == :has_many
-          nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id)
-        end
+        populate_foreign_key(self, nested_object, reflection, :has_many) if association_macro == :has_many
 
         saving_result = call_save_or_destroy(nested_object, save_method)
 
-        self.send("#{reflection.single_name}_id=", nested_object.id) if represented_object.present? && association_macro == :belongs_to
+        populate_foreign_key(nested_object, self, reflection, :belongs_to) if association_macro == :belongs_to
 
         saving_result
+
       end.all?
     end
 
@@ -68,6 +67,22 @@ module ObjectAttorney
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
+
+    def populate_foreign_key(origin, destination, reflection, macro)
+      return nil if represented_object.blank? || check_if_marked_for_destruction?(destination)
+
+      if macro == :has_many
+        setter = "#{self.class.represented_object_reflection.single_name}_id="
+      elsif macro == :belongs_to
+        setter = "#{reflection.single_name}_id="
+      end
+
+      if destination.respond_to?(setter)
+        destination.send(setter, origin.id)
+      elsif destination.respond_to?("send_to_representative")
+        destination.send_to_representative(setter, origin.id)
+      end
+    end
 
     def self.included(base)
       base.extend(ClassMethods)
@@ -135,9 +150,7 @@ module ObjectAttorney
       
       new_nested_object = reflection.klass.new(attributes)
 
-      if represented_object.present? && reflection.has_many?
-        new_nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id)
-      end
+      populate_foreign_key(self, new_nested_object, reflection, :has_many) if reflection.has_many?
 
       new_nested_object
     end

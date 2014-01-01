@@ -35,6 +35,12 @@ module ObjectAttorney
     respond_to?(attribute) ? send(attribute) : nil
   end
 
+  def send_to_representative(method_name, *args)
+    return false if represented_object.blank?
+
+    represented_object.send(method_name, *args)
+  end
+
   protected #################### PROTECTED METHODS DOWN BELOW ######################
 
   def init(attributes); end

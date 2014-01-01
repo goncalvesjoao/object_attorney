@@ -35,18 +35,18 @@ module ObjectAttorney
       end
 
       def submit(save_method, options = {})
-        save_result = save_nested_objects(save_method, :belongs_to, options)
-        save_result = save_represented_object(save_method, options) if save_result
-        save_result = save_nested_objects(save_method, :has_many, options) if save_result
+        save_result = save_or_destroy_nested_objects(save_method, :belongs_to, options)
+        save_result = save_or_destroy_represented_object(save_method, options) if save_result
+        save_result = save_or_destroy_nested_objects(save_method, :has_many, options) if save_result
         save_result
       end
 
-      def save_represented_object(save_method, options = {})
+      def save_or_destroy_represented_object(save_method, options = {})
         return true if represented_object.blank?
         call_save_or_destroy(represented_object, save_method, options)
       end
 
-      def save_nested_objects(save_method, association_macro, options = {})
+      def save_or_destroy_nested_objects(save_method, association_macro, options = {})
         nested_objects(association_macro).map do |reflection, nested_object|
           nested_object.send("#{self.class.represented_object_reflection.single_name}_id=", self.id) if represented_object.present? && association_macro == :has_many
 
