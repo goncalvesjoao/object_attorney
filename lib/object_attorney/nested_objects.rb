@@ -204,7 +204,7 @@ module ObjectAttorney
 
       def _accepts_nested_objects_overwrite_macro(nested_object_name, options, macro)
         default_options = { macro: macro }
-        options = options.is_a?(Hash) ? options.merge(default_options) : default_options.merge({ class_name: options })
+        options = options.is_a?(Hash) ? options.merge(default_options) : default_options
         accepts_nested_objects(nested_object_name, options)
       end
 

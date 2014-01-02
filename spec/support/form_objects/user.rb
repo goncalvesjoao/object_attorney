@@ -4,9 +4,7 @@ module FormObjects
 
     include ObjectAttorney
 
-    represents :user
-
-    delegate_properties :email, to: :user
+    represents :user, properties: [:email]
 
     attr_accessor :terms_of_service
 

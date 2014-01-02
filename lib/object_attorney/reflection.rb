@@ -4,7 +4,7 @@ module ObjectAttorney
     attr_reader :name, :klass, :options
 
     def initialize(class_name, options)
-      options = options.is_a?(Hash) ? options : { class_name: options }
+      options = options.is_a?(Hash) ? options : {}
 
       @name, @options = class_name, options
 

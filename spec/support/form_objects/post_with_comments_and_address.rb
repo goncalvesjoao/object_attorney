@@ -4,9 +4,7 @@ module FormObjects
     
     include ObjectAttorney
 
-    represents :post
-
-    delegate_properties :title, :body, to: :post
+    represents :post, properties: [:title, :body]
 
     has_many :comments
     

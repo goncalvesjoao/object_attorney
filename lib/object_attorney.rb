@@ -93,6 +93,10 @@ module ObjectAttorney
       self.instance_variable_set("@represented_object_reflection", Reflection.new(represented_object_name, options))
 
       define_method(represented_object_name) { represented_object }
+
+      if options.include?(:properties)
+        delegate_properties(*options[:properties], to: represented_object_name)
+      end
     end
 
     def represented_object_reflection
