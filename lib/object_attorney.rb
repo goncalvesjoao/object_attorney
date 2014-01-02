@@ -93,9 +93,14 @@ module ObjectAttorney
       self.instance_variable_set("@represented_object_reflection", Reflection.new(represented_object_name, options))
 
       define_method(represented_object_name) { represented_object }
+      
+      delegate_properties(*options[:properties], to: represented_object_name) if options.include?(:properties)
+      
+      delegate(*options[:readers], to: represented_object_name) if options.include?(:readers)
 
-      if options.include?(:properties)
-        delegate_properties(*options[:properties], to: represented_object_name)
+      if options.include?(:writers)
+        writers = options[:writers].map { |writer| "#{writer}=" }
+        delegate(*writers, to: represented_object_name)
       end
     end
 
