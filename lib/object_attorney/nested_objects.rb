@@ -161,15 +161,19 @@ module ObjectAttorney
 
     module ClassMethods
 
-      def accepts_nested_object(nested_object_name, options = {})
-        _accepts_nested_objects(nested_object_name, options.merge({ macro: :belongs_to }))
+      def has_many(nested_object_name, options = {})
+        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_many)
+      end
+
+      def has_one(nested_object_name, options = {})
+        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_one)
+      end
+
+      def belongs_to(nested_object_name, options = {})
+        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :belongs_to)
       end
 
       def accepts_nested_objects(nested_object_name, options = {})
-        _accepts_nested_objects(nested_object_name, options.merge({ macro: :has_many }))
-      end
-
-      def _accepts_nested_objects(nested_object_name, options = {})
         reflection = AssociationReflection.new(nested_object_name, represented_object_reflection, options)
 
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
@@ -192,6 +196,15 @@ module ObjectAttorney
 
       def reflect_on_all_associations(macro = nil)
         macro ? association_reflections.select { |reflection| reflection.macro == macro } : association_reflections
+      end
+
+
+      private ############################### PRIVATE METHODS ###########################
+
+      def _accepts_nested_objects_overwrite_macro(nested_object_name, options, macro)
+        default_options = { macro: macro }
+        options = options.is_a?(Hash) ? options.merge(default_options) : default_options.merge({ class_name: options })
+        accepts_nested_objects(nested_object_name, options)
       end
 
     end

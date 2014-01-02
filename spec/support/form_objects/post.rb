@@ -10,7 +10,7 @@ module FormObjects
 
       delegate_properties :title, :body, to: :post
 
-      accepts_nested_objects :comments
+      has_many :comments
 
       validates_presence_of :title
 
@@ -23,7 +23,7 @@ module FormObjects
 
       represents :post
 
-      accepts_nested_objects :comments
+      has_many :comments
 
       validates_presence_of :title
 

@@ -8,9 +8,9 @@ module FormObjects
 
     delegate_properties :title, :body, to: :post
 
-    accepts_nested_objects :comments
+    has_many :comments
     
-    accepts_nested_object :address
+    has_one :address
 
     validates_presence_of :title
     

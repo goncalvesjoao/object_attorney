@@ -1,15 +1,12 @@
 module ObjectAttorney
 
   class AssociationReflection < Reflection
-    attr_reader :related_reflection
+    attr_reader :related_reflection, :macro
 
     def initialize(association, related_reflection, options)
       super(association, options)
+      @macro = options[:macro] || macro_default(association)
       @related_reflection = related_reflection
-    end
-
-    def macro
-      @macro ||= options[:macro] || macro_default(association)
     end
 
     def primary_key

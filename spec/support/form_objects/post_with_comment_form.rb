@@ -4,7 +4,7 @@ module FormObjects
 
     class Base < Post::Base
 
-      accepts_nested_objects :comments, class_name: FormObjects::Comment
+      has_many :comments, FormObjects::Comment
 
     end
     
