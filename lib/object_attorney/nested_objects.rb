@@ -179,7 +179,7 @@ module ObjectAttorney
 
         define_method(nested_object_name) { nested_getter(nested_object_name) }
         define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes) }
-        define_method("existing_#{reflection.plural_name}") { existing_nested_objects(nested_object_name) }
+        define_method("existing_#{nested_object_name}") { existing_nested_objects(nested_object_name) }
       end
 
       def association_reflections
