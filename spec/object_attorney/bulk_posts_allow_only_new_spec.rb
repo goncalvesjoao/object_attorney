@@ -1,8 +1,8 @@
 require "spec_helper"
 
-shared_examples "a BulkPostsAllowOnlyNew" do
+shared_examples "a BulkPostsAllowOnlyNewForm" do
 
-  it "1. Tabless model 'BulkPostsAllowOnlyNew' only accepts new 'Post' requests and ignores editing requests." do
+  it "1. Tabless model 'BulkPostsAllowOnlyNewForm' only accepts new 'Post' requests and ignores editing requests." do
     params = {
       bulk_post: {
         posts_attributes: {
@@ -30,10 +30,10 @@ shared_examples "a BulkPostsAllowOnlyNew" do
 
 end
 
-describe FormObjects::BulkPostsAllowOnlyNew::Base do
-  it_behaves_like 'a BulkPostsAllowOnlyNew'
+describe BulkPostsAllowOnlyNewForm::Base do
+  it_behaves_like 'a BulkPostsAllowOnlyNewForm'
 end
 
-describe FormObjects::BulkPostsAllowOnlyNew::Explicit do
-  it_behaves_like 'a BulkPostsAllowOnlyNew'
+describe BulkPostsAllowOnlyNewForm::Explicit do
+  it_behaves_like 'a BulkPostsAllowOnlyNewForm'
 end

@@ -1,25 +1,21 @@
-module FormObjects
-  
-  module PostWithCommentForm
+module PostWithCommentForm
 
-    class Base < Post::Base
+  class Base < PostForm::Base
 
-      has_many :comments, class_name: FormObjects::Comment
+    has_many :comments, class_name: CommentForm
 
-    end
-    
-    class Explicit < Post::Base
-
-      def build_comment(attributes = {})
-        FormObjects::Comment.new(attributes)
-      end
-
-      def existing_comments
-        post.comments.map { |comment| FormObjects::Comment.new({}, comment) }
-      end
-
-    end
-    
   end
+  
+  class Explicit < PostForm::Base
 
+    def build_comment(attributes = {})
+      CommentForm.new(attributes)
+    end
+
+    def existing_comments
+      post.comments.map { |comment| CommentForm.new({}, comment) }
+    end
+
+  end
+  
 end

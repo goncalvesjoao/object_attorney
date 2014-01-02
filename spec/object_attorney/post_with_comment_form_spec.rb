@@ -114,10 +114,10 @@ shared_examples "a PostWithCommentForm" do
 
 end
 
-describe FormObjects::PostWithCommentForm::Base do
+describe PostWithCommentForm::Base do
   it_behaves_like 'a PostWithCommentForm'
 end
 
-describe FormObjects::PostWithCommentForm::Explicit do
+describe PostWithCommentForm::Explicit do
   it_behaves_like 'a PostWithCommentForm'
 end

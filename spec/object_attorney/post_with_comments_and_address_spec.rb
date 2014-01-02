@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe FormObjects::PostWithCommentsAndAddress do
+describe PostWithCommentsAndAddressForm do
 
   it "1. Creating a 'Post' with nested 'Comment's and a single 'Address'" do
     params = {

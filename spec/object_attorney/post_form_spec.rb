@@ -1,6 +1,6 @@
 require "spec_helper"
 
-shared_examples "a Post" do
+shared_examples "a PostForm" do
 
   it "1. Creating a 'Post' with nested 'Comment's, through 'FormObjects::Post'" do
     params = {
@@ -117,10 +117,10 @@ shared_examples "a Post" do
 
 end
 
-describe FormObjects::Post::Base do
-  it_behaves_like 'a Post'
+describe PostForm::Base do
+  it_behaves_like 'a PostForm'
 end
 
-describe FormObjects::Post::Explicit do
-  it_behaves_like 'a Post'
+describe PostForm::Explicit do
+  it_behaves_like 'a PostForm'
 end

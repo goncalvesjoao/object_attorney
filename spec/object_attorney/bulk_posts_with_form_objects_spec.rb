@@ -1,6 +1,6 @@
 require "spec_helper"
 
-shared_examples "a BulkPostsWithFormObjects" do
+shared_examples "a BulkPostsWithFormObjectsForm" do
 
   it "1. If any of the 'Post's is invalid, no changes should take effect." do
     params = {
@@ -56,7 +56,7 @@ shared_examples "a BulkPostsWithFormObjects" do
     Post.find_by_id(3).title.should == 'new post'
   end
 
-  it "3. 'BulkPostsWithFormObjects' should be importing all of the represented objects errors." do
+  it "3. 'BulkPostsWithFormObjectsForm' should be importing all of the represented objects errors." do
     params = {
       bulk_post: {
         posts_attributes: {
@@ -82,10 +82,10 @@ shared_examples "a BulkPostsWithFormObjects" do
 
 end
 
-describe FormObjects::BulkPostsWithFormObjects::Base do
-  it_behaves_like 'a BulkPostsWithFormObjects'
+describe BulkPostsWithFormObjectsForm::Base do
+  it_behaves_like 'a BulkPostsWithFormObjectsForm'
 end
 
-describe FormObjects::BulkPostsWithFormObjects::Explicit do
-  it_behaves_like 'a BulkPostsWithFormObjects'
+describe BulkPostsWithFormObjectsForm::Explicit do
+  it_behaves_like 'a BulkPostsWithFormObjectsForm'
 end

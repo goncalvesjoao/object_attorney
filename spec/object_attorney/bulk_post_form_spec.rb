@@ -1,9 +1,9 @@
 require "spec_helper"
 
 
-shared_examples "a BulkPosts" do
+shared_examples "a BulkPostsForm" do
 
-  it "1. Creating multiple 'Post's, with a tabless model 'BulkPosts' has if it had 'accepts_nested_attributes_for :posts'" do
+  it "1. Creating multiple 'Post's, with a tabless model 'BulkPostsForm' has if it had 'accepts_nested_attributes_for :posts'" do
     params = {
       bulk_post: {
         posts_attributes: {
@@ -43,10 +43,10 @@ shared_examples "a BulkPosts" do
 
 end
 
-describe FormObjects::BulkPosts::Base do
-  it_behaves_like 'a BulkPosts'
+describe BulkPostsForm::Base do
+  it_behaves_like 'a BulkPostsForm'
 end
 
-describe FormObjects::BulkPosts::Explicit do
-  it_behaves_like 'a BulkPosts'
+describe BulkPostsForm::Explicit do
+  it_behaves_like 'a BulkPostsForm'
 end

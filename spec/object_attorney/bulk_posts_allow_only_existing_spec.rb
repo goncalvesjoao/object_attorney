@@ -1,6 +1,6 @@
 require "spec_helper"
 
-shared_examples "a BulkPostsAllowOnlyExisting" do
+shared_examples "a BulkPostsAllowOnlyExistingForm" do
 
   it "1. Tabless model 'BulkPostsAllowOnlyNew' only accepts editings 'Post' requests and ignores new requests." do
     params = {
@@ -28,10 +28,10 @@ shared_examples "a BulkPostsAllowOnlyExisting" do
 
 end
 
-describe FormObjects::BulkPostsAllowOnlyExisting::Base do
-  it_behaves_like 'a BulkPostsAllowOnlyExisting'
+describe BulkPostsAllowOnlyExistingForm::Base do
+  it_behaves_like 'a BulkPostsAllowOnlyExistingForm'
 end
 
-describe FormObjects::BulkPostsAllowOnlyExisting::Explicit do
-  it_behaves_like 'a BulkPostsAllowOnlyExisting'
+describe BulkPostsAllowOnlyExistingForm::Explicit do
+  it_behaves_like 'a BulkPostsAllowOnlyExistingForm'
 end
