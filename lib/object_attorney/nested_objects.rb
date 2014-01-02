@@ -141,11 +141,24 @@ module ObjectAttorney
     def build_nested_object(nested_object_name, attributes = {})
       reflection = self.class.reflect_on_association(nested_object_name)
       
-      new_nested_object = reflection.klass.new(attributes)
-
+      new_nested_object = build_from_represented_object(reflection, nested_object_name, attributes) || reflection.klass.new(attributes)
+      
       populate_foreign_key(self, new_nested_object, reflection, :has_many)
 
       new_nested_object
+    end
+
+    def build_from_represented_object(reflection, nested_object_name, attributes)
+      return nil if represented_object.blank?
+      return nil if reflection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).klass
+
+      build_method = "build_#{nested_object_name}"
+
+      if represented_object.respond_to?(build_method)
+        represented_object.send(build_method, attributes)
+      else
+        represented_object.send(nested_object_name).build(attributes)
+      end
     end
 
     def existing_nested_objects(nested_object_name)
