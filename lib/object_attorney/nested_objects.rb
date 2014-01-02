@@ -37,6 +37,7 @@ module ObjectAttorney
       nested_objects(association_macro).map do |reflection, nested_object|
         
         populate_foreign_key(self, nested_object, reflection, :has_many)
+        populate_foreign_key(self, nested_object, reflection, :has_one)
 
         saving_result = call_save_or_destroy(nested_object, save_method)
 

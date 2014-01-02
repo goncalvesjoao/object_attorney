@@ -51,6 +51,7 @@ module ObjectAttorney
       save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
       save_result = save_or_destroy_represented_object(save_method) if save_result
       save_result = save_or_destroy_nested_objects(save_method, :has_many) if save_result
+      save_result = save_or_destroy_nested_objects(save_method, :has_one) if save_result
       save_result
     end
 

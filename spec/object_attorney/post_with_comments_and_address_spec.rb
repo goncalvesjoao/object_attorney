@@ -32,8 +32,13 @@ describe FormObjects::PostWithCommentsAndAddress do
     comment.post_id.should == post.id
     comment.body.should == 'body1'
 
-    Address.count.should == 1
+    comment = post.comments.second
+    comment.post_id.should == post.id
+    comment.body.should == ''
+
+    post.address.present?.should == true
     address = Address.first
+    address.post_id.should == post.id
     address.street.should == 'street'
   end
 

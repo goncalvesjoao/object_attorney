@@ -18,7 +18,7 @@ module ObjectAttorney
     end
 
     def set_relational_keys(origin, destination)
-      if has_many?
+      if has_many? || has_one?
         set_foreign_key(destination, primary_key_of(origin))
       elsif belongs_to?
         set_foreign_key(origin, primary_key_of(destination))
@@ -43,6 +43,10 @@ module ObjectAttorney
       macro == :has_many
     end
 
+    def has_one?
+      macro == :has_one
+    end
+
     def belongs_to?
       macro == :belongs_to
     end
@@ -54,7 +58,7 @@ module ObjectAttorney
     end
 
     def foreign_key_default
-      if has_many?
+      if has_many? || has_one?
         "#{related_reflection.single_name}_id"
       elsif belongs_to?
         "#{single_name}_id"

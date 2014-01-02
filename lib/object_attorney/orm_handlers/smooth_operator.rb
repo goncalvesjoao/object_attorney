@@ -38,6 +38,7 @@ module ObjectAttorney
         save_result = save_or_destroy_nested_objects(save_method, :belongs_to, options)
         save_result = save_or_destroy_represented_object(save_method, options) if save_result
         save_result = save_or_destroy_nested_objects(save_method, :has_many, options) if save_result
+        save_result = save_or_destroy_nested_objects(save_method, :has_one, options) if save_result
         save_result
       end
 
@@ -50,6 +51,7 @@ module ObjectAttorney
         nested_objects(association_macro).map do |reflection, nested_object|
           
           populate_foreign_key(self, nested_object, reflection, :has_many)
+          populate_foreign_key(self, nested_object, reflection, :has_one)
 
           saving_result = call_save_or_destroy(nested_object, save_method, options)
 
