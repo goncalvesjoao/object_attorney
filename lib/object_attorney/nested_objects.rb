@@ -171,7 +171,7 @@ module ObjectAttorney
 
     def build_from_represented_object(reflection, nested_object_name, attributes)
       return nil if represented_object.blank?
-      return nil if reflection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).klass
+      return nil if reflection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
 
       build_method = "build_#{nested_object_name}"
 
