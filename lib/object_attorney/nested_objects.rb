@@ -115,7 +115,7 @@ module ObjectAttorney
       attributes = send("#{nested_object_name}_attributes")
 
       if nested_object.present?
-        return nested_object if (attributes["id"] || attributes[:id]).to_s != nested_object.id.to_s
+        #return nested_object if (attributes["id"] || attributes[:id]).to_s != nested_object.id.to_s
 
         nested_object.assign_attributes(attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
