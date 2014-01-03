@@ -19,7 +19,7 @@ module ObjectAttorney
 
     def save!(save_method = :save!)
       before_save
-      save_result = valid? ? save_after_validations(save_method) : false
+      save_result = valid? ? submit(save_method) : false
       after_save if valid? && save_result
       save_result
     end
@@ -42,10 +42,6 @@ module ObjectAttorney
 
     def before_save; end
     def after_save; end
-
-    def save_after_validations(save_method)
-      submit(save_method)
-    end
 
     def submit(save_method)
       save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
