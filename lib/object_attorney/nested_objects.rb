@@ -183,15 +183,16 @@ module ObjectAttorney
     end
 
     def existing_nested_objects(nested_object_name)
-      nested_association_klass = self.class.reflect_on_association(nested_object_name).klass
+      nested_relection = self.class.reflect_on_association(nested_object_name)
 
-      existing_list = represented_object.blank? ? nested_association_klass.all : (represented_object.send(nested_object_name) || [])
+      existing = represented_object.blank? ? nested_relection.klass.all : represented_object.send(nested_object_name)
+      existing ||= (nested_relection.has_many? ? [] : nil)
       
-      if represented_object.present? && nested_association_klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
-        existing_list = existing_list.map { |existing_nested_object| nested_association_klass.new({}, existing_nested_object) }
+      if represented_object.present? && nested_relection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
+        existing = existing.map { |existing_nested_object| nested_relection.klass.new({}, existing_nested_object) }
       end
 
-      existing_list
+      existing
     end
 
     module ClassMethods
