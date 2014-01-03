@@ -187,7 +187,7 @@ module ObjectAttorney
 
       existing_list = represented_object.blank? ? nested_association_klass.all : (represented_object.send(nested_object_name) || [])
       
-      if represented_object.present? && nested_association_klass != self.class.represented_object_class.reflect_on_association(nested_object_name).klass
+      if represented_object.present? && nested_association_klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
         existing_list = existing_list.map { |existing_nested_object| nested_association_klass.new({}, existing_nested_object) }
       end
 
