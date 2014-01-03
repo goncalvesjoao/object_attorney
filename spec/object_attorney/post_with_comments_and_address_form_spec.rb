@@ -12,7 +12,8 @@ describe PostWithCommentsAndAddressForm do
           "1" => { body: "" }
         },
         address_attributes: {
-          '0' => { street: 'street' }
+          street: 'street',
+          city: 'city'
         }
       }
     }
@@ -40,6 +41,7 @@ describe PostWithCommentsAndAddressForm do
     address = Address.first
     address.post_id.should == post.id
     address.street.should == 'street'
+    address.city.should == 'city'
   end
 
 end

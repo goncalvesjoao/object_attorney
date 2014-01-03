@@ -49,12 +49,13 @@ module ObjectAttorney
     end
 
     def validate_nested_objects
-      return true if nested_objects.map do |reflection, nested_object|
+      valid = nested_objects.map do |reflection, nested_object|
         nested_object.marked_for_destruction? ? true : nested_object.valid?
       end.all?
 
-      import_nested_objects_errors
-      false
+      import_nested_objects_errors unless valid
+      
+      valid
     end
 
     def import_nested_objects_errors
@@ -86,7 +87,7 @@ module ObjectAttorney
     end
 
     def attributes_without_destroy(attributes)
-      return nil unless attributes.kind_of?(Hash)
+      return nil unless attributes.is_a?(Hash)
 
       _attributes = attributes.dup
       _attributes.delete("_destroy")
@@ -99,11 +100,31 @@ module ObjectAttorney
       nested_instance_variable = self.instance_variable_get("@#{nested_object_name}")
 
       if nested_instance_variable.nil?
-        nested_instance_variable = get_existing_and_new_nested_objects(nested_object_name)
+        reflection = self.class.reflect_on_association(nested_object_name)
+
+        nested_instance_variable = reflection.has_many? ? get_existing_and_new_nested_objects(nested_object_name) : get_existing_or_new_nested_object(nested_object_name)
+
         self.instance_variable_set("@#{nested_object_name}", nested_instance_variable)
       end
 
       nested_instance_variable
+    end
+
+    def get_existing_or_new_nested_object(nested_object_name)
+      nested_object = send("existing_#{nested_object_name}")
+      attributes = send("#{nested_object_name}_attributes")
+
+      if nested_object.present?
+        return nested_object if (attributes["id"] || attributes[:id]).to_s != nested_object.id.to_s
+
+        nested_object.assign_attributes(attributes_without_destroy(attributes))
+        mark_for_destruction_if_necessary(nested_object, attributes)
+      else
+        nested_object = send("build_#{nested_object_name.to_s.singularize}", attributes_without_destroy(attributes))
+        mark_for_destruction_if_necessary(nested_object, attributes)
+      end
+
+      nested_object
     end
 
     def get_existing_and_new_nested_objects(nested_object_name)
