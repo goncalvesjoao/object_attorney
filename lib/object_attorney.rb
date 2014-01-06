@@ -8,6 +8,8 @@ require 'active_record'
 module ObjectAttorney
 
   def initialize(attributes = {}, object = nil)
+    before_initialize(attributes)
+
     if !attributes.is_a?(Hash) && object.blank?
       object = attributes
       attributes = nil
@@ -20,7 +22,7 @@ module ObjectAttorney
     assign_attributes attributes
     mark_for_destruction_if_necessary(self, attributes)
 
-    init(attributes)
+    after_initialize(attributes)
   end
 
   def assign_attributes(attributes = {})
@@ -43,7 +45,8 @@ module ObjectAttorney
 
   protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-  def init(attributes); end
+  def before_initialize(attributes); end
+  def after_initialize(attributes); end
 
   def allowed_attribute(attribute)
     respond_to?("#{attribute}=")

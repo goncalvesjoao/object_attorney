@@ -201,15 +201,15 @@ module ObjectAttorney
     module ClassMethods
 
       def has_many(nested_object_name, options = {})
-        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_many)
+        accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_many)
       end
 
       def has_one(nested_object_name, options = {})
-        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_one)
+        accepts_nested_objects_overwrite_macro(nested_object_name, options, :has_one)
       end
 
       def belongs_to(nested_object_name, options = {})
-        _accepts_nested_objects_overwrite_macro(nested_object_name, options, :belongs_to)
+        accepts_nested_objects_overwrite_macro(nested_object_name, options, :belongs_to)
       end
 
       def accepts_nested_objects(nested_object_name, options = {})
@@ -218,11 +218,13 @@ module ObjectAttorney
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
         self.instance_variable_set("@association_reflections", association_reflections | [reflection])
 
-        self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
+        define_nested_attributes_accessor(nested_object_name)
 
         define_method(nested_object_name) { nested_getter(nested_object_name) }
         define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes) }
         define_method("existing_#{nested_object_name}") { existing_nested_objects(nested_object_name) }
+
+        define_nested_ids_accessor(nested_object_name, reflection)
       end
 
       def association_reflections
@@ -240,7 +242,24 @@ module ObjectAttorney
 
       private ############################### PRIVATE METHODS ###########################
 
-      def _accepts_nested_objects_overwrite_macro(nested_object_name, options, macro)
+      def define_nested_attributes_accessor(nested_object_name)
+        self.send(:attr_writer, "#{nested_object_name}_attributes".to_sym)
+        module_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+          def #{nested_object_name}_attributes; @#{nested_object_name}_attributes ||= {}; end
+        RUBY_EVAL
+      end
+
+      def define_nested_ids_accessor(nested_object_name, reflection)
+        return nil unless reflection.has_many?
+
+        module_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+          def #{reflection.single_name}_ids
+            @#{reflection.single_name}_ids ||= nested_object_name.map(&:#{reflection.primary_key})
+          end
+        RUBY_EVAL
+      end
+
+      def accepts_nested_objects_overwrite_macro(nested_object_name, options, macro)
         default_options = { macro: macro }
         options = options.is_a?(Hash) ? options.merge(default_options) : default_options
         accepts_nested_objects(nested_object_name, options)
