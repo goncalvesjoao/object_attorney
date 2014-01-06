@@ -44,4 +44,10 @@ describe PostWithCommentsAndAddressForm do
     address.city.should == 'city'
   end
 
+  it "2. Checking is nestes attributes ':comments' and ':address' are initialized" do
+    post_form = described_class.new
+    post_form.comments_attributes.should == {}
+    post_form.address_attributes.should == {}
+  end
+
 end

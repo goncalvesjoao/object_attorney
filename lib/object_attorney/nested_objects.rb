@@ -5,7 +5,7 @@ module ObjectAttorney
 
     def initialize_nested_attributes
       self.class.reflect_on_all_associations.each do |reflection|
-        self.instance_variable_set("@#{reflection.name}_attribtues", {})
+        self.instance_variable_set("@#{reflection.name}_attributes", {})
       end
     end
 
