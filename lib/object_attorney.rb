@@ -8,12 +8,14 @@ require 'active_record'
 module ObjectAttorney
 
   def initialize(attributes = {}, object = nil)
-    before_initialize(attributes)
+    initialize_nested_attributes
 
     if !attributes.is_a?(Hash) && object.blank?
       object = attributes
       attributes = nil
     end
+
+    before_initialize(attributes)
 
     attributes = {} if attributes.blank?
 

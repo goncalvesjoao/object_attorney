@@ -3,6 +3,12 @@ require "object_attorney/association_reflection"
 module ObjectAttorney
   module NestedObjects
 
+    def initialize_nested_attributes
+      self.class.reflect_on_all_associations.each do |reflection|
+        self.instance_variable_set("@#{reflection.name}_attribtues", {})
+      end
+    end
+
     def mark_for_destruction
       @marked_for_destruction = true
     end
@@ -218,7 +224,7 @@ module ObjectAttorney
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
         self.instance_variable_set("@association_reflections", association_reflections | [reflection])
 
-        define_nested_attributes_accessor(nested_object_name)
+        self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
 
         define_method(nested_object_name) { nested_getter(nested_object_name) }
         define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes) }
@@ -242,12 +248,12 @@ module ObjectAttorney
 
       private ############################### PRIVATE METHODS ###########################
 
-      def define_nested_attributes_accessor(nested_object_name)
-        self.send(:attr_writer, "#{nested_object_name}_attributes".to_sym)
-        module_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
-          def #{nested_object_name}_attributes; @#{nested_object_name}_attributes ||= {}; end
-        RUBY_EVAL
-      end
+      # def define_nested_attributes_accessor(nested_object_name)
+      #   self.send(:attr_writer, "#{nested_object_name}_attributes".to_sym)
+      #   module_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+      #     def #{nested_object_name}_attributes; @#{nested_object_name}_attributes ||= {}; end
+      #   RUBY_EVAL
+      # end
 
       def define_nested_ids_accessor(nested_object_name, reflection)
         return nil unless reflection.has_many?
