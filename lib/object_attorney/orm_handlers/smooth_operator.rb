@@ -4,11 +4,11 @@ module ObjectAttorney
     module SmoothOperator
 
       def save(options = {})
-        _save { submit(options) }
+        save_or_! { submit(options) }
       end
 
       def save!(options = {})
-        _save { submit!(options) }
+        save_or_! { submit!(options) }
       end
 
       def submit(options = {})

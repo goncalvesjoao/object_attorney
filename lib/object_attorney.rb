@@ -56,12 +56,22 @@ module ObjectAttorney
 
   def validate_represented_object
     valid = override_validations? ? true : Helpers.try_or_return(represented_object, :valid?, true)
-    import_represented_object_errors unless valid
+    
+    incorporate_errors_from(represented_object.errors) unless valid
+
     valid
   end
 
-  def import_represented_object_errors
-    represented_object.errors.each { |key, value| self.errors.add(key, value) }
+  def validate_imported_errors
+    imported_errors = (@imported_errors || {})
+    
+    incorporate_errors_from imported_errors
+
+    imported_errors.empty?
+  end
+
+  def incorporate_errors_from(errors)
+    errors.each { |key, value| self.errors.add(key, value) }
   end
 
   def represented_object
@@ -79,9 +89,10 @@ module ObjectAttorney
       include ObjectAttorney::ORM
 
       validate :validate_represented_object
+      validate :validate_imported_errors
 
-      def valid?
-        override_validations? ? true : super
+      def valid?(context = nil)
+        override_validations? ? true : super(context)
       end
     end
 

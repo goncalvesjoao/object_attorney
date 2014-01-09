@@ -14,11 +14,11 @@ module ObjectAttorney
     end
 
     def save
-      _save { submit }
+      save_or_! { submit }
     end
 
     def save!(save_method = :save!)
-      _save { submit! }
+      save_or_! { submit! }
     end
 
     def submit
@@ -43,12 +43,31 @@ module ObjectAttorney
       end
     end
 
+    def clear_imported_errors
+      @imported_errors = {}
+    end
+
+    def populate_imported_errors
+      represented_object.errors.each { |key, value| @imported_errors[key] = value } if represented_object.present?
+
+      nested_objects.map do |reflection, nested_object|
+        nested_object.clear_imported_errors_and_import_new if nested_object.respond_to?(:clear_imported_errors_and_import_new)
+      end
+    end
+
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-    def _save
+    def save_or_!
+      clear_imported_errors
+
       before_save
+      
       save_result = valid? ? yield : false
+      
+      populate_imported_errors
+
       after_save if valid? && save_result
+
       save_result
     end
 
@@ -57,7 +76,7 @@ module ObjectAttorney
 
     def submit_or_!(save_method)
       save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
-      save_result = save_or_destroy_represented_object(save_method) if save_result
+      save_result = save_or_destroy_represented_object(save_method)
       save_result = save_or_destroy_nested_objects(save_method, :has_many) if save_result
       save_result = save_or_destroy_nested_objects(save_method, :has_one) if save_result
       save_result
