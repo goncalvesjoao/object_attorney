@@ -7,6 +7,11 @@ module ObjectAttorney
     def is_integer?(string)
       string.match(/^(\d)+$/)
     end
+    
+    def singularize(class_name)
+      class_name = class_name.to_s
+      plural?(class_name) ? class_name.singularize : class_name
+    end
 
     def plural?(string)
       string = string.to_s

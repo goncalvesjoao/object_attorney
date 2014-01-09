@@ -18,7 +18,7 @@ module ObjectAttorney
     end
 
     def single_name
-      @single_name ||= options[:single_name] || single_name_default
+      @single_name ||= options[:single_name] || Helpers.singularize(name)
     end
 
     def plural_name
@@ -26,11 +26,6 @@ module ObjectAttorney
     end
 
     private ################################# private
-
-    def single_name_default
-      class_name = name.to_s
-      Helpers.plural?(class_name) ? class_name.singularize : class_name
-    end
 
     def klass_default(class_name)
       if Helpers.plural?(class_name)

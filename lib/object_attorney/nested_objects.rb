@@ -126,7 +126,7 @@ module ObjectAttorney
         nested_object.assign_attributes(attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
       else
-        nested_object = send("build_#{nested_object_name.to_s.singularize}", attributes_without_destroy(attributes))
+        nested_object = send("build_#{Helpers.singularize(nested_object_name)}", attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
       end
 
@@ -157,7 +157,7 @@ module ObjectAttorney
       (send("#{nested_object_name}_attributes") || {}).values.each do |attributes|
         next if attributes["id"].present? || attributes[:id].present?
 
-        new_nested_object = send("build_#{nested_object_name.to_s.singularize}", attributes_without_destroy(attributes))
+        new_nested_object = send("build_#{Helpers.singularize(nested_object_name)}", attributes_without_destroy(attributes))
         next unless new_nested_object
 
         mark_for_destruction_if_necessary(new_nested_object, attributes)
