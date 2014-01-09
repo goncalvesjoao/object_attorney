@@ -4,14 +4,19 @@ module ObjectAttorney
     module SmoothOperator
 
       def save(options = {})
-        save!(options, :save)
+        _save { submit(options) }
       end
 
-      def save!(options = {}, save_method = :save!)
-        before_save
-        save_result = valid? ? submit(save_method, options) : false
-        after_save if valid? && save_result
-        save_result
+      def save!(options = {})
+        _save { submit!(options) }
+      end
+
+      def submit(options = {})
+        _submit(:save, options)
+      end
+
+      def submit!(options = {})
+        _submit(:save!, options)
       end
 
       def destroy(options = {})
@@ -30,7 +35,7 @@ module ObjectAttorney
 
       protected #################### PROTECTED METHODS DOWN BELOW ######################
 
-      def submit(save_method, options = {})
+      def _submit(save_method, options = {})
         save_result = save_or_destroy_nested_objects(save_method, :belongs_to, options)
         save_result = save_or_destroy_represented_object(save_method, options) if save_result
         save_result = save_or_destroy_nested_objects(save_method, :has_many, options) if save_result

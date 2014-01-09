@@ -14,14 +14,19 @@ module ObjectAttorney
     end
 
     def save
-      save!(:save)
+      _save { submit }
     end
 
     def save!(save_method = :save!)
-      before_save
-      save_result = valid? ? submit(save_method) : false
-      after_save if valid? && save_result
-      save_result
+      _save { submit! }
+    end
+
+    def submit
+      _submit(:save)
+    end
+
+    def submit!
+      _submit(:save!)
     end
 
     def destroy
@@ -40,10 +45,17 @@ module ObjectAttorney
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
+    def _save
+      before_save
+      save_result = valid? ? yield : false
+      after_save if valid? && save_result
+      save_result
+    end
+
     def before_save; end
     def after_save; end
 
-    def submit(save_method)
+    def _submit(save_method)
       save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
       save_result = save_or_destroy_represented_object(save_method) if save_result
       save_result = save_or_destroy_nested_objects(save_method, :has_many) if save_result
