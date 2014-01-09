@@ -22,11 +22,11 @@ module ObjectAttorney
     end
 
     def submit
-      _submit(:save)
+      submit_or_!(:save)
     end
 
     def submit!
-      _submit(:save!)
+      submit_or_!(:save!)
     end
 
     def destroy
@@ -55,7 +55,7 @@ module ObjectAttorney
     def before_save; end
     def after_save; end
 
-    def _submit(save_method)
+    def submit_or_!(save_method)
       save_result = save_or_destroy_nested_objects(save_method, :belongs_to)
       save_result = save_or_destroy_represented_object(save_method) if save_result
       save_result = save_or_destroy_nested_objects(save_method, :has_many) if save_result
