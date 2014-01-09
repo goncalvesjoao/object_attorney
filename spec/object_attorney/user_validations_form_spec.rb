@@ -8,8 +8,23 @@ describe UserValidationsForm do
 
     user_form = UserValidationsForm.new(email: "email@gmail.com", terms_of_service: true)
     user_form.valid?.should == true
+    
     user_form.save
     user_form.should have(1).error_on(:email)
+    user_form.errors.size.should == 1
+
+    user_form.valid?.should == false
+    user_form.should have(1).error_on(:email)
+    user_form.errors.size.should == 1
+
+    user_form.save
+
+    user_form.should have(1).error_on(:email)
+    user_form.errors.size.should == 1
+
+    user_form.valid?.should == false
+    user_form.should have(1).error_on(:email)
+    user_form.errors.size.should == 1
   end
 
 end
