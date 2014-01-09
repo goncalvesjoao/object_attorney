@@ -1,6 +1,7 @@
 require "object_attorney/version"
 require "object_attorney/helpers"
 require "object_attorney/reflection"
+require "object_attorney/imported_errors"
 require "object_attorney/nested_objects"
 require "object_attorney/orm"
 require 'active_record'
@@ -62,18 +63,6 @@ module ObjectAttorney
     valid
   end
 
-  def validate_imported_errors
-    imported_errors = (@imported_errors || {})
-    
-    incorporate_errors_from imported_errors
-
-    imported_errors.empty?
-  end
-
-  def incorporate_errors_from(errors)
-    errors.each { |key, value| self.errors.add(key, value) }
-  end
-
   def represented_object
     @represented_object ||= self.class.represented_object_class.try(:new)
   end
@@ -85,6 +74,7 @@ module ObjectAttorney
       include ActiveModel::Validations
       include ActiveModel::Validations::Callbacks
       include ActiveModel::Conversion
+      include ObjectAttorney::ImportedErrors
       include ObjectAttorney::NestedObjects
       include ObjectAttorney::ORM
 

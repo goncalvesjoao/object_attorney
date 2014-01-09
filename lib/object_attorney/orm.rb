@@ -43,19 +43,21 @@ module ObjectAttorney
       end
     end
 
-    def clear_imported_errors
-      @imported_errors = {}
+    def clear_nested_imported_errors
+      nested_objects.each do |reflection, nested_object|
+        nested_object.clear_imported_errors
 
-      nested_objects.map do |reflection, nested_object|
-        nested_object.clear_imported_errors if nested_object.respond_to?(:clear_imported_errors)
+        nested_object.clear_nested_imported_errors if nested_object.respond_to?(:clear_nested_imported_errors)
       end
     end
 
-    def populate_imported_errors
-      represented_object.errors.each { |key, value| @imported_errors[key] = value } if represented_object.present?
-
-      nested_objects.map do |reflection, nested_object|
-        nested_object.populate_imported_errors if nested_object.respond_to?(:populate_imported_errors)
+    def populate_nested_imported_errors
+      nested_objects.each do |reflection, nested_object|
+        next if nested_object.marked_for_destruction?
+        
+        nested_object.populate_imported_errors
+        
+        nested_object.populate_nested_imported_errors if nested_object.respond_to?(:populate_nested_imported_errors)
       end
     end
 
@@ -64,11 +66,13 @@ module ObjectAttorney
     def save_or_!
       clear_imported_errors
       
-      before_save
+      clear_imported_errors
+      clear_nested_imported_errors
       
       save_result = valid? ? yield : false
       
       populate_imported_errors
+      populate_nested_imported_errors
 
       after_save if valid? && save_result
 
