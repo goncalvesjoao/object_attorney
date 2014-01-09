@@ -170,9 +170,9 @@ module ObjectAttorney
       
       
       if can_represented_object_build_nested?(reflection, nested_object_name)
-        new_nested_object = build_from_represented_object(reflection, nested_object_name, attributes)
+        new_nested_object = build_from_represented_object(reflection, nested_object_name)
 
-        new_nested_object = build_nested_custom_class_if_necessary(reflection, attributes, new_nested_object)
+        new_nested_object = assign_attributes_or_build_nested_object(reflection, attributes, new_nested_object)
       else
         new_nested_object = reflection.klass.new(attributes)
       end
@@ -182,11 +182,11 @@ module ObjectAttorney
       new_nested_object
     end
 
-    def build_nested_custom_class_if_necessary(reflection, attributes, new_nested_object)
+    def assign_attributes_or_build_nested_object(reflection, attributes, new_nested_object)
       real_reflection_class = self.class.represented_object_reflect_on_association(reflection.name).try(:klass)
 
       if reflection.klass == real_reflection_class
-        new_nested_object
+        new_nested_object.assign_attributes(attributes)
       else
         reflection.klass.respond_to?(:represents) ? reflection.klass.new(attributes, new_nested_object) : reflection.klass.new(attributes)
       end
@@ -198,13 +198,13 @@ module ObjectAttorney
       represented_object.respond_to?("build_#{nested_object_name}") || represented_object.send(nested_object_name).respond_to?(:build)
     end
 
-    def build_from_represented_object(reflection, nested_object_name, attributes)
+    def build_from_represented_object(reflection, nested_object_name)
       build_method = "build_#{nested_object_name}"
 
       if represented_object.respond_to?(build_method)
-        represented_object.send(build_method, attributes)
+        represented_object.send(build_method)
       else
-        represented_object.send(nested_object_name).build(attributes)
+        represented_object.send(nested_object_name).build
       end
     end
 
