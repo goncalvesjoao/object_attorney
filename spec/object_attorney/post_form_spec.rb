@@ -2,7 +2,7 @@ require "spec_helper"
 
 shared_examples "a PostForm" do
 
-  it "1. Creating a 'Post' with nested 'Comment's, through 'FormObjects::Post'" do
+  it "1. Creating a 'Post' with nested 'Comment's, through 'FormObjects::Post'", new: true do
     params = {
       post: {
         title: 'First post',
@@ -17,7 +17,8 @@ shared_examples "a PostForm" do
     post_form = described_class.new(params[:post])
 
     post_form.save.should == true
-    
+    post_form.comments.length.should == 2
+
     Post.all.count.should == 1
     post = Post.first
     post.title.should == 'First post'
@@ -47,7 +48,9 @@ shared_examples "a PostForm" do
     Comment.first.body.should == 'body1'
 
     post_form = described_class.new(params[:post], Post.find(params[:id]))
-    post_form.save
+    
+    post_form.save.should == true
+    post_form.comments.length.should == 1
     
     post = Post.first
     post.title.should == 'altered post'
@@ -74,7 +77,9 @@ shared_examples "a PostForm" do
     Comment.all.count.should == 1
 
     post_form = described_class.new(params[:post], Post.find(params[:id]))
-    post_form.save
+
+    post_form.save.should == true
+    post_form.comments.length.should == 1
     
     Post.first.title.should == 'altered post'
     Comment.all.count.should == 0
@@ -100,7 +105,9 @@ shared_examples "a PostForm" do
     Comment.all.count.should == 2
 
     post_form = described_class.new(params[:post], Post.find(params[:id]))
-    post_form.save
+
+    post_form.save.should == true
+    post_form.comments.length.should == 3
     
     post = Post.first
     post.title.should == 'altered post'

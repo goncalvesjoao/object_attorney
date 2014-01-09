@@ -45,13 +45,17 @@ module ObjectAttorney
 
     def clear_imported_errors
       @imported_errors = {}
+
+      nested_objects.map do |reflection, nested_object|
+        nested_object.clear_imported_errors if nested_object.respond_to?(:clear_imported_errors)
+      end
     end
 
     def populate_imported_errors
       represented_object.errors.each { |key, value| @imported_errors[key] = value } if represented_object.present?
 
       nested_objects.map do |reflection, nested_object|
-        nested_object.clear_imported_errors_and_import_new if nested_object.respond_to?(:clear_imported_errors_and_import_new)
+        nested_object.populate_imported_errors if nested_object.respond_to?(:populate_imported_errors)
       end
     end
 
