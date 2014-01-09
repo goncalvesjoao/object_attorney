@@ -117,6 +117,12 @@ module ObjectAttorney
       represented_object_reflection.try(:klass)
     end
 
+    def represented_object_reflect_on_association(association)
+      return nil if represented_object_class.nil?
+
+      represented_object_class.reflect_on_association(association)
+    end
+
     def zuper_method(method_name, *args)
       self.superclass.send(method_name, *args) if self.superclass.respond_to?(method_name)
     end

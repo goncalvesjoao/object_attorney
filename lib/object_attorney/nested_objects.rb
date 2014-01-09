@@ -168,23 +168,43 @@ module ObjectAttorney
     def build_nested_object(nested_object_name, attributes = {})
       reflection = self.class.reflect_on_association(nested_object_name)
       
-      new_nested_object = build_from_represented_object(reflection, nested_object_name, attributes) || reflection.klass.new(attributes)
       
+      if can_represented_object_build_nested?(reflection, nested_object_name)
+        new_nested_object = build_from_represented_object(reflection, nested_object_name, attributes)
+
+        new_nested_object = build_nested_custom_class_if_necessary(reflection, attributes, new_nested_object)
+      else
+        new_nested_object = reflection.klass.new(attributes)
+      end
+
       populate_foreign_key(self, new_nested_object, reflection, :has_many)
 
       new_nested_object
     end
 
-    def build_from_represented_object(reflection, nested_object_name, attributes)
-      return nil if represented_object.blank?
-      return nil if reflection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
+    def build_nested_custom_class_if_necessary(reflection, attributes, new_nested_object)
+      real_reflection_class = self.class.represented_object_reflect_on_association(reflection.name).try(:klass)
 
+      if reflection.klass == real_reflection_class
+        new_nested_object
+      else
+        reflection.klass.respond_to?(:represents) ? reflection.klass.new(attributes, new_nested_object) : reflection.klass.new(attributes)
+      end
+    end
+
+    def can_represented_object_build_nested?(reflection, nested_object_name)
+      return nil if represented_object.blank?
+      
+      represented_object.respond_to?("build_#{nested_object_name}") || represented_object.send(nested_object_name).respond_to?(:build)
+    end
+
+    def build_from_represented_object(reflection, nested_object_name, attributes)
       build_method = "build_#{nested_object_name}"
 
       if represented_object.respond_to?(build_method)
         represented_object.send(build_method, attributes)
       else
-        represented_object.send(nested_object_name).build(attributes)
+        represented_object.send(nested_object_name).try(:build, attributes)
       end
     end
 
