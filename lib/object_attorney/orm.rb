@@ -63,7 +63,7 @@ module ObjectAttorney
 
     def save_or_!
       clear_imported_errors
-
+      
       before_save
       
       save_result = valid? ? yield : false

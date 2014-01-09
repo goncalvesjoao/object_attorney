@@ -168,7 +168,6 @@ module ObjectAttorney
     def build_nested_object(nested_object_name, attributes = {})
       reflection = self.class.reflect_on_association(nested_object_name)
       
-      
       if can_represented_object_build_nested?(reflection, nested_object_name)
         new_nested_object = build_from_represented_object(reflection, nested_object_name)
 
@@ -187,6 +186,7 @@ module ObjectAttorney
 
       if reflection.klass == real_reflection_class
         new_nested_object.assign_attributes(attributes)
+        new_nested_object
       else
         reflection.klass.respond_to?(:represents) ? reflection.klass.new(attributes, new_nested_object) : reflection.klass.new(attributes)
       end

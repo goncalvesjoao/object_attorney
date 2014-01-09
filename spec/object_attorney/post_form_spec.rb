@@ -2,7 +2,7 @@ require "spec_helper"
 
 shared_examples "a PostForm" do
 
-  it "1. Creating a 'Post' with nested 'Comment's, through 'FormObjects::Post'", new: true do
+  it "1. Creating a 'Post' with nested 'Comment's, through 'FormObjects::Post'" do
     params = {
       post: {
         title: 'First post',

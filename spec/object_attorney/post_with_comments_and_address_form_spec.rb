@@ -21,6 +21,7 @@ describe PostWithCommentsAndAddressForm do
     post_form = described_class.new(params[:post])
 
     post_form.save.should == true
+    post_form.address.present?.should == true
     
     Post.all.count.should == 1
     post = Post.first
