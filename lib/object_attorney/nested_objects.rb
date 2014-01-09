@@ -193,7 +193,7 @@ module ObjectAttorney
     end
 
     def can_represented_object_build_nested?(reflection, nested_object_name)
-      return nil if represented_object.blank?
+      return false if represented_object.blank?
       
       represented_object.respond_to?("build_#{nested_object_name}") || represented_object.send(nested_object_name).respond_to?(:build)
     end
@@ -204,7 +204,7 @@ module ObjectAttorney
       if represented_object.respond_to?(build_method)
         represented_object.send(build_method, attributes)
       else
-        represented_object.send(nested_object_name).try(:build, attributes)
+        represented_object.send(nested_object_name).build(attributes)
       end
     end
 
