@@ -1,5 +1,6 @@
 module ObjectAttorney
-  module ORM
+  
+  module Record
 
     def id
       represented_object.try(:id)
@@ -43,36 +44,34 @@ module ObjectAttorney
       end
     end
 
-    def clear_nested_imported_errors
+    def clear_nested_imposed_errors
       nested_objects.each do |reflection, nested_object|
-        nested_object.clear_imported_errors
+        nested_object.clear_imposed_errors
 
-        nested_object.clear_nested_imported_errors if nested_object.respond_to?(:clear_nested_imported_errors)
+        nested_object.clear_nested_imposed_errors if nested_object.respond_to?(:clear_nested_imposed_errors)
       end
     end
 
-    def populate_nested_imported_errors
+    def populate_nested_imposed_errors
       nested_objects.each do |reflection, nested_object|
         next if nested_object.marked_for_destruction?
         
-        nested_object.populate_imported_errors
+        nested_object.populate_imposed_errors
         
-        nested_object.populate_nested_imported_errors if nested_object.respond_to?(:populate_nested_imported_errors)
+        nested_object.populate_nested_imposed_errors if nested_object.respond_to?(:populate_nested_imposed_errors)
       end
     end
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
     def save_or_!
-      clear_imported_errors
-      
-      clear_imported_errors
-      clear_nested_imported_errors
+      clear_imposed_errors
+      clear_nested_imposed_errors
       
       save_result = valid? ? yield : false
       
-      populate_imported_errors
-      populate_nested_imported_errors
+      populate_imposed_errors
+      populate_nested_imposed_errors
 
       after_save if valid? && save_result
 
@@ -114,4 +113,5 @@ module ObjectAttorney
     end
 
   end
+  
 end

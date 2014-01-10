@@ -111,9 +111,7 @@ module ObjectAttorney
         nested_instance_variable = reflection.has_many? ? get_existing_and_new_nested_objects(nested_object_name) : get_existing_or_new_nested_object(nested_object_name)
 
         [*nested_instance_variable].each do |nested_object|
-          nested_object.extend(ImportedErrors)
-
-          # nested_object.singleton_class.validate(:validate_imported_errors)
+          nested_object.extend(Validations) unless nested_object.respond_to?(:represented_object)
         end
 
         self.instance_variable_set("@#{nested_object_name}", nested_instance_variable)
