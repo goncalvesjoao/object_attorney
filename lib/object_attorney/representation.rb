@@ -19,14 +19,34 @@ module ObjectAttorney
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
     def validate_represented_object
-      valid = override_validations? ? true : Helpers.try_or_return(represented_object, :valid?, true)
+      represented_object_valid = Helpers.try_or_return(represented_object, :valid?, true)
       
-      load_errors_from(represented_object.errors) unless valid
+      load_errors_from represented_object.errors unless represented_object_valid
 
-      valid
+      nested_valid = add_errors_entry_if_nested_invalid
+
+      represented_object_valid && nested_valid
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
+
+    def add_errors_entry_if_nested_invalid
+      nested_vs_invalid = {}
+
+      nested_objects.each do |reflection, nested_object|
+        if !nested_object.errors.empty? && !nested_vs_invalid.include?(reflection.name)
+          message = errors.send(:normalize_message, reflection.name, :invalid, {})
+
+          if !errors.messages[reflection.name].try(:include?, message)
+            nested_vs_invalid[reflection.name] = message
+          end
+        end
+      end
+
+      load_errors_from nested_vs_invalid
+
+      nested_vs_invalid.empty?
+    end
     
     def self.included(base)
       base.extend(ClassMethods)

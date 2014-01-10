@@ -55,13 +55,7 @@ module ObjectAttorney
     end
 
     def validate_nested_objects
-      valid = nested_objects.map do |reflection, nested_object|
-        nested_object.marked_for_destruction? ? true : nested_object.valid?
-      end.all?
-
-      import_nested_objects_errors unless valid
-      
-      valid
+      nested_objects.map { |reflection, nested_object| nested_object.valid? }.all?
     end
 
     def import_nested_objects_errors

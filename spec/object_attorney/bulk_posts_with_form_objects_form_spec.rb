@@ -74,7 +74,7 @@ shared_examples "a BulkPostsWithFormObjectsForm" do
     bulk_posts_form = described_class.new(params[:bulk_post])
     bulk_posts_form.save
     
-    bulk_posts_form.should have(2).errors_on(:posts)
+    bulk_posts_form.should have(1).errors_on(:posts)
     bulk_posts_form.posts.first.should have(1).errors_on(:title)
     bulk_posts_form.posts.second.should have(:no).errors_on(:title)
     bulk_posts_form.posts.third.should have(1).errors_on(:title)

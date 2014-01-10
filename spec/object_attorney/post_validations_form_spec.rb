@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe PostValidationsForm do
 
-  it "1. 'PostValidationsForm' becomes invalid if 'Post' has errors after the #submit method and incorporates its errors." do
+  it "1. 'PostValidationsForm' becomes invalid if 'Post' has errors after the #submit method and incorporates its errors.", current: true do
     params = {
       post: {
         title: 'First post',
@@ -19,23 +19,27 @@ describe PostValidationsForm do
     post_form.save
     
     post_form.should have(1).error_on(:title)
-    post_form.errors.size.should == 3
+    post_form.should have(1).error_on(:comments)
+    post_form.errors.size.should == 2
     post_form.comments.first.should have(1).error_on(:body)
 
     post_form.valid?.should == false
     post_form.should have(1).error_on(:title)
-    post_form.errors.size.should == 3
+    post_form.should have(1).error_on(:comments)
+    post_form.errors.size.should == 2
     post_form.comments.first.should have(1).error_on(:body)
 
     post_form.save
 
     post_form.should have(1).error_on(:title)
-    post_form.errors.size.should == 3
+    post_form.should have(1).error_on(:comments)
+    post_form.errors.size.should == 2
     post_form.comments.first.should have(1).error_on(:body)
 
     post_form.valid?.should == false
     post_form.should have(1).error_on(:title)
-    post_form.errors.size.should == 3
+    post_form.should have(1).error_on(:comments)
+    post_form.errors.size.should == 2
     post_form.comments.first.should have(1).error_on(:body)
   end
 

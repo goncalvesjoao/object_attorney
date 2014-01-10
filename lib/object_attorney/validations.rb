@@ -16,8 +16,6 @@ module ObjectAttorney
       marked_for_destruction?
     end
 
-    protected #################### PROTECTED METHODS DOWN BELOW ######################
-
     def clear_imposed_errors
       @imposed_errors = {}
     end
