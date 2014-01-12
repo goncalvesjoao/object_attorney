@@ -68,6 +68,8 @@ module ObjectAttorney
       clear_imposed_errors
       clear_nested_imposed_errors
       
+      before_save
+
       save_result = valid? ? yield : false
       
       populate_imposed_errors
