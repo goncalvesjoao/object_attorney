@@ -123,7 +123,7 @@ module ObjectAttorney
 
         nested_object.assign_attributes(attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
-      else
+      elsif attributes.keys.present?
         nested_object = send("build_#{Helpers.singularize(nested_object_name)}", attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
       end
