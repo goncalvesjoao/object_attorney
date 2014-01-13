@@ -22,7 +22,7 @@ module ObjectAttorney
 
     def populate_imposed_errors
       if respond_to?(:represented_object)
-        represented_object.errors.each { |key, value| @imposed_errors[key] = value } if represented_object.present?
+        represented_object.errors.each { |key, value| @imposed_errors[key] = value } if represented_object.present? && represented_object.errors.present?
       else
         errors.each { |key, value| @imposed_errors[key] = value }
       end

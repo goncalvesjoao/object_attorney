@@ -18,7 +18,7 @@ module ObjectAttorney
   def initialize(attributes = {}, object = nil)
     initialize_nested_attributes
 
-    parsing_arguments(attributes, object)
+    attributes, object = parsing_arguments(attributes, object)
 
     before_initialize(attributes)
 

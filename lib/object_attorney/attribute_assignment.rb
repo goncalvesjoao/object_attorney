@@ -21,6 +21,8 @@ module ObjectAttorney
       end
 
       attributes = {} if attributes.blank?
+
+      [attributes, object]
     end
 
     def allowed_attribute(attribute)

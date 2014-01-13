@@ -58,4 +58,13 @@ describe UserForm do
     user_form.user.admin.should == false
   end
 
+  it "6. Initializing 'UserForm' with an object has its first argument." do
+    user = User.create({ email: 'email@gmail.com' })
+    user_form = UserForm.new(user)
+    user_form.terms_of_service = true
+    
+    user_form.save.should == true
+    user_form.user.should == user
+  end
+
 end
