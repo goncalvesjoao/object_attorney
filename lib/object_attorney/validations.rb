@@ -2,7 +2,7 @@ module ObjectAttorney
   module Validations
 
     def valid?(context = nil)
-      return true if override_validations?
+      return true if override_validations? || !self.respond_to?(:errors) || self.errors.nil?
 
       context ||= (new_record? ? :create : :update)
       output = super(context)
