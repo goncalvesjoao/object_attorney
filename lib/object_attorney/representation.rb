@@ -34,7 +34,7 @@ module ObjectAttorney
       nested_vs_invalid = {}
 
       nested_objects.each do |reflection, nested_object|
-        if !nested_object.errors.empty? && !nested_vs_invalid.include?(reflection.name)
+        if Helpers.has_errors_method?(nested_object) && !nested_object.errors.empty? && !nested_vs_invalid.include?(reflection.name)
           message = errors.send(:normalize_message, reflection.name, :invalid, {})
 
           if !errors.messages[reflection.name].try(:include?, message)

@@ -23,6 +23,10 @@ module ObjectAttorney
       returning_value.nil? ? default_value : returning_value
     end
 
+    def has_errors_method?(object)
+      object.present? && object.respond_to?(:errors) && !object.errors.nil?
+    end
+    
   end
   
 end

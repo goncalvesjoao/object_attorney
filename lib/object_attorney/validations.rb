@@ -2,7 +2,7 @@ module ObjectAttorney
   module Validations
 
     def valid?(context = nil)
-      return true if override_validations? || !self.respond_to?(:errors) || self.errors.nil?
+      return true if override_validations? || !Helpers.has_errors_method?(self)
 
       context ||= (new_record? ? :create : :update)
       output = super(context)
@@ -22,7 +22,7 @@ module ObjectAttorney
 
     def populate_imposed_errors
       if respond_to?(:represented_object)
-        represented_object.errors.each { |key, value| @imposed_errors[key] = value } if represented_object.present? && represented_object.errors.present?
+        represented_object.errors.each { |key, value| @imposed_errors[key] = value } if Helpers.has_errors_method?(represented_object)
       else
         errors.each { |key, value| @imposed_errors[key] = value }
       end
