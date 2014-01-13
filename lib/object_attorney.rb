@@ -47,7 +47,6 @@ module ObjectAttorney
       include Validations
       include NestedObjects
       include Record
-      include Translation
       include Representation
 
       validate :validate_represented_object
@@ -59,6 +58,7 @@ module ObjectAttorney
   module ClassMethods
     include Naming
     include Delegation
+    include Translation
   end
 
 end

@@ -5,7 +5,7 @@ module ObjectAttorney
     def human_attribute_name(attribute_key_name, options = {})
       no_translation = "-- no translation --"
       
-      defaults = ["object_attorney.attributes.#{name.underscore}.#{attribute_key_name}".to_sym]
+      defaults = ["object_attorney.attributes.#{represented_object_class.to_s.underscore}.#{attribute_key_name}".to_sym]
       defaults << options[:default] if options[:default]
       defaults.flatten!
       defaults << no_translation
