@@ -122,6 +122,27 @@ shared_examples "a PostForm" do
     comment.body.should == 'new comment'
   end
 
+  it "5. Creating new 'Comment's and deleting them at the same time." do
+    params = {
+      id: 1,
+      post: {
+        title: "altered post",
+        comments_attributes: {
+          "0" => { body: '1', _destroy: true },
+          "1" => { body: '2' },
+          "2" => { body: '3', _destroy: true }
+        }
+      }
+    }
+
+    post_form = described_class.new(params[:post])
+
+    post_form.comments.length.should == 1
+    post_form.save.should == true
+    post_form.comments.length.should == 1
+    Comment.all.count.should == 1
+  end
+
 end
 
 describe PostForm::Base do

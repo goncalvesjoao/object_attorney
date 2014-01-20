@@ -29,6 +29,21 @@ module ObjectAttorney
       respond_to?("#{attribute}=")
     end
 
+    def attributes_without_destroy(attributes)
+      return nil unless attributes.is_a?(Hash)
+
+      _attributes = attributes.dup
+      _attributes.delete("_destroy")
+      _attributes.delete(:_destroy)
+
+      _attributes
+    end
+
+    def attributes_order_destruction?(attributes)
+      _destroy = attributes["_destroy"] || attributes[:_destroy]
+      ["true", "1", true].include?(_destroy)
+    end
+
   end
 
 end

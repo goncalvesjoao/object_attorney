@@ -20,9 +20,7 @@ module ObjectAttorney
     def mark_for_destruction_if_necessary(object, attributes)
       return nil unless attributes.is_a?(Hash)
 
-      _destroy = attributes["_destroy"] || attributes[:_destroy]
-
-      object.mark_for_destruction if ["true", "1", true].include?(_destroy)
+      object.mark_for_destruction if attributes_order_destruction? attributes
     end
 
     def nested_objects(macro = nil)
@@ -86,16 +84,6 @@ module ObjectAttorney
       end
     end
 
-    def attributes_without_destroy(attributes)
-      return nil unless attributes.is_a?(Hash)
-
-      _attributes = attributes.dup
-      _attributes.delete("_destroy")
-      _attributes.delete(:_destroy)
-
-      _attributes
-    end
-
     def nested_getter(nested_object_name)
       nested_instance_variable = self.instance_variable_get("@#{nested_object_name}")
 
@@ -123,7 +111,7 @@ module ObjectAttorney
 
         nested_object.assign_attributes(attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
-      elsif attributes.keys.present?
+      elsif attributes.keys.present? && !attributes_order_destruction?(attributes)
         nested_object = send("build_#{Helpers.singularize(nested_object_name)}", attributes_without_destroy(attributes))
         mark_for_destruction_if_necessary(nested_object, attributes)
       end
@@ -153,7 +141,7 @@ module ObjectAttorney
 
     def build_new_nested_objects(existing_and_new_nested_objects, nested_object_name)
       (send("#{nested_object_name}_attributes") || {}).values.each do |attributes|
-        next if attributes["id"].present? || attributes[:id].present?
+        next if attributes["id"].present? || attributes[:id].present? || attributes_order_destruction?(attributes)
 
         new_nested_object = send("build_#{Helpers.singularize(nested_object_name)}", attributes_without_destroy(attributes))
         next unless new_nested_object
