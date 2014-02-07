@@ -35,7 +35,11 @@ module ObjectAttorney
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
     def load_errors_from(errors)
-      errors.each { |key, value| self.errors.add(key, value) }
+      errors.each do |key, value|
+        [*value].each do |_value|
+          self.errors.add(key, _value) unless self.errors.added?(key, _value)
+        end
+      end
     end
 
   end
