@@ -92,7 +92,7 @@ module ObjectAttorney
       def initiate_setters(setters, represented_object_name)
         return nil if setters.nil?
         
-        setters = [*setters].map { |setter| setters << "#{setter}=" }
+        setters = [*setters].map { |setter| "#{setter}=" }
 
         delegate(*setters, to: represented_object_name) 
       end
