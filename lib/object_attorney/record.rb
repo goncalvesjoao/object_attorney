@@ -103,7 +103,11 @@ module ObjectAttorney
     module ClassMethods
 
       def all(*args)
-        represented_object_class.all(*args).map { |represented_object| self.new({}, represented_object) }
+        if represented_object_class.respond_to?(:all)
+          represented_object_class.all(*args).map { |represented_object| self.new({}, represented_object) }
+        else
+          []
+        end
       end
 
     end
