@@ -61,12 +61,11 @@ module ObjectAttorney
         
         delegate_properties(*options[:properties], to: represented_object_name) if options.include?(:properties)
         
-        delegate(*options[:readers], to: represented_object_name) if options.include?(:readers)
+        initiate_getters(options[:getter], represented_object_name)
+        initiate_getters(options[:getters], represented_object_name)
 
-        if options.include?(:writers)
-          writers = options[:writers].map { |writer| "#{writer}=" }
-          delegate(*writers, to: represented_object_name)
-        end
+        initiate_setters(options[:setter], represented_object_name)
+        initiate_setters(options[:setters], represented_object_name)
       end
 
       def represented_object_reflection
@@ -81,6 +80,21 @@ module ObjectAttorney
         return nil if represented_object_class.nil?
 
         represented_object_class.reflect_on_association(association)
+      end
+
+
+      private ############### PRIVATE #################
+
+      def initiate_getters(getters, represented_object_name)
+        delegate(*getters, to: represented_object_name) unless getters.nil?
+      end
+
+      def initiate_setters(setters, represented_object_name)
+        return nil if setters.nil?
+        
+        setters = [*setters].map { |setter| setters << "#{setter}=" }
+
+        delegate(*setters, to: represented_object_name) 
       end
 
     end
