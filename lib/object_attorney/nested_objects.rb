@@ -199,7 +199,7 @@ module ObjectAttorney
 
       existing = represented_object.nil? ? (nested_relection.klass.try(:all) || []) : (represented_object.send(nested_object_name) || (nested_relection.has_many? ? [] : nil))
       
-      if represented_object.present? && nested_relection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
+      if represented_object.present? && self.class.represented_object_class.respond_to?(:reflect_on_association) && nested_relection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
         if existing.respond_to?(:map)
           existing = existing.map { |existing_nested_object| nested_relection.klass.new({}, existing_nested_object) }
         else
