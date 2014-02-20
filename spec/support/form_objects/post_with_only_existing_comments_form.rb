@@ -4,6 +4,6 @@ class PostWithOnlyExistingCommentsForm
 
   represents :post, properties: [:title, :body]
 
-  has_many :comments, no_new_records: true
+  has_many :comments, new_records: false
 
 end
