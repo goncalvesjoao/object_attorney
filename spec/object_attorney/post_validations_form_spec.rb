@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe PostValidationsForm do
 
-  it "1. 'PostValidationsForm' becomes invalid if 'Post' has errors after the #submit method and incorporates its errors.", current: true do
+  it "1. 'PostValidationsForm' becomes invalid if 'Post' has errors after the #submit method and incorporates its errors." do
     params = {
       post: {
         title: 'First post',

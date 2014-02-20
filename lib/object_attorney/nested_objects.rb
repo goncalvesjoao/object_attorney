@@ -153,6 +153,8 @@ module ObjectAttorney
 
     def build_nested_object(nested_object_name, attributes = {})
       reflection = self.class.reflect_on_association(nested_object_name)
+
+      return nil if reflection.options[:no_new_records]
       
       if can_represented_object_build_nested?(reflection, nested_object_name)
         new_nested_object = build_from_represented_object(reflection, nested_object_name)
@@ -197,6 +199,8 @@ module ObjectAttorney
     def existing_nested_objects(nested_object_name)
       nested_relection = self.class.reflect_on_association(nested_object_name)
 
+      return [] if nested_relection.options[:no_existing_records]
+
       existing = represented_object.nil? ? (nested_relection.klass.try(:all) || []) : (represented_object.send(nested_object_name) || (nested_relection.has_many? ? [] : nil))
       
       if represented_object.present? && self.class.represented_object_class.respond_to?(:reflect_on_association) && nested_relection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
@@ -225,6 +229,7 @@ module ObjectAttorney
       end
 
       def accepts_nested_objects(nested_object_name, options = {})
+        options.symbolize_keys!
         reflection = AssociationReflection.new(nested_object_name, represented_object_reflection, options)
 
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)

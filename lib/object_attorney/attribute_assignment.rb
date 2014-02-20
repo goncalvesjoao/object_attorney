@@ -22,6 +22,8 @@ module ObjectAttorney
 
       attributes = {} if attributes.blank?
 
+      attributes.symbolize_keys!
+      
       [attributes, object]
     end
 

@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe PostWithCommentValidationsForm do
 
-  it "1. 'PostWithCommentValidationsForm' becomes invalid if 'Post' or nested 'Comment's has errors after the #submit method and incorporates its errors.", current: true do
+  it "1. 'PostWithCommentValidationsForm' becomes invalid if 'Post' or nested 'Comment's has errors after the #submit method and incorporates its errors." do
     params = {
       post: {
         title: 'First post',
