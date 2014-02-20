@@ -21,10 +21,8 @@ module ObjectAttorney
       end
 
       attributes = {} if attributes.blank?
-
-      attributes.symbolize_keys!
       
-      [attributes, object]
+      [attributes.symbolize_keys, object]
     end
 
     def allowed_attribute(attribute)
