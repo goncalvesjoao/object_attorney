@@ -36,7 +36,7 @@ module ObjectAttorney
       _attributes.delete("_destroy")
       _attributes.delete(:_destroy)
 
-      _attributes
+      _attributes.symbolize_keys
     end
 
     def attributes_order_destruction?(attributes)

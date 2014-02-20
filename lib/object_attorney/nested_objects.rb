@@ -64,8 +64,12 @@ module ObjectAttorney
 
     def get_attributes_for_existing(nested_object_name, existing_nested_object)
       attributes = send("#{nested_object_name}_attributes")
-      return {} if attributes.blank?
-      attributes.present? ? (attributes.values.select { |x| x[:id].to_i == existing_nested_object.id }.first || {}) : {}
+      
+      if attributes.present?
+        (attributes.values.select { |x| x[:id].to_i == existing_nested_object.id }.first || {}).symbolize_keys
+      else
+        {}
+      end
     end
 
     private #################### PRIVATE METHODS DOWN BELOW ######################
@@ -152,6 +156,7 @@ module ObjectAttorney
     end
 
     def build_nested_object(nested_object_name, attributes = {})
+      attributes = attributes.symbolize_keys
       reflection = self.class.reflect_on_association(nested_object_name)
 
       return nil if reflection.options[:new_records] == false
