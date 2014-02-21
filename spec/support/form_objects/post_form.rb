@@ -4,9 +4,7 @@ module PostForm
 
     include ObjectAttorney
 
-    represents :post
-
-    delegate_properties :title, :body, to: :post
+    represents :post, properties: [:title, :body]
 
     has_many :comments
 
@@ -51,4 +49,54 @@ module PostForm
 
   end
   
+
+  class Properties1
+    include ObjectAttorney
+    represents :post
+    properties :title, :user_id
+  end
+
+  class Properties2
+    include ObjectAttorney
+    represents :post, properties: [:title, :user_id]
+  end
+
+
+  class Getters1
+    include ObjectAttorney
+    represents :post
+    getters :title, :user_id
+  end
+
+  class Getters2
+    include ObjectAttorney
+    represents :post, getters: [:title, :user_id]
+  end
+
+
+  class Setters1
+    include ObjectAttorney
+    represents :post
+    setters :title, :user_id
+  end
+
+  class Setters2
+    include ObjectAttorney
+    represents :post, setters: [:title, :user_id]
+  end
+
+
+  class GrandFather
+    include ObjectAttorney
+    represents :post
+  end
+
+  class Father < GrandFather
+    properties :title
+  end
+
+  class Son < Father
+    getters :body
+  end
+
 end

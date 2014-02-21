@@ -4,7 +4,7 @@ class CommentForm
 
   represents :comment
 
-  delegate_properties :body, to: :comment
+  properties :body
 
   validates_presence_of :body
 

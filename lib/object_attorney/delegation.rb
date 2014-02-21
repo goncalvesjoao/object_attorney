@@ -6,12 +6,32 @@ module ObjectAttorney
       self.superclass.send(method_name, *args) if self.superclass.respond_to?(method_name)
     end
 
-    def delegate_properties(*properties, options)
-      properties.each { |property| delegate_property(property, options) }
+    def properties(*_properties)
+      _properties.each { |property| delegate_property(property) }
     end
 
-    def delegate_property(property, options)
-      delegate property, "#{property}=", options
+    def getters(*_getters)
+      _getters.each { |getter| delegate_getter(getter) }
+    end
+
+    def setters(*_setters)
+      _setters.each { |getter| delegate_setter(getter) }
+    end
+
+    
+    protected ##################### PROTECTED #####################
+
+    def delegate_property(property)
+      delegate_getter(property)
+      delegate_setter(property)
+    end
+
+    def delegate_getter(getter)
+      delegate getter, to: :represented_object
+    end
+
+    def delegate_setter(setter)
+      delegate "#{setter}=", to: :represented_object
     end
 
   end

@@ -59,13 +59,9 @@ module ObjectAttorney
 
         define_method(represented_object_name) { represented_object }
         
-        delegate_properties(*options[:properties], to: represented_object_name) if options.include?(:properties)
-        
-        initiate_getters(options[:getter], represented_object_name)
-        initiate_getters(options[:getters], represented_object_name)
-
-        initiate_setters(options[:setter], represented_object_name)
-        initiate_setters(options[:setters], represented_object_name)
+        properties(*options[:properties]) if options.include?(:properties)
+        getters(*options[:getters]) if options.include?(:getters)
+        setters(*options[:setters]) if options.include?(:setters)
       end
 
       def represented_object_reflection
@@ -80,21 +76,6 @@ module ObjectAttorney
         return nil if represented_object_class.nil?
 
         represented_object_class.reflect_on_association(association)
-      end
-
-
-      private ############### PRIVATE #################
-
-      def initiate_getters(getters, represented_object_name)
-        delegate(*getters, to: represented_object_name) unless getters.nil?
-      end
-
-      def initiate_setters(setters, represented_object_name)
-        return nil if setters.nil?
-        
-        setters = [*setters].map { |setter| "#{setter}=" }
-
-        delegate(*setters, to: represented_object_name) 
       end
 
     end
