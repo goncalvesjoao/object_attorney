@@ -14,6 +14,8 @@ shared_examples "a PostForm with delegated properties" do
     post_form = described_class.new(params[:post])
 
     post_form.save.should == true
+    described_class.exposed_getters.should == [:title, :user_id]
+    described_class.exposed_setters.should == [:title, :user_id]
 
     Post.all.count.should == 1
     post = Post.first
@@ -47,6 +49,8 @@ shared_examples "a PostForm with only delegated getters" do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
+    described_class.exposed_getters.should == [:title, :user_id]
+    described_class.exposed_setters.should == []
 
     Post.all.count.should == 1
     post = Post.first
@@ -84,6 +88,8 @@ shared_examples "a PostForm with only delegated setters" do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
+    described_class.exposed_getters.should == []
+    described_class.exposed_setters.should == [:title, :user_id]
 
     Post.all.count.should == 1
     post = Post.first
@@ -106,12 +112,12 @@ describe PostForm::Setters2 do
 end
 
 
-describe PostForm::Son do
+describe PostForm::GrandSon do
 
-  it "1. Editing a 'Post' with 3 params, only one should take place, and only 2 getters should be active" do
+  it "1. Editing a 'Post' with 6 params, only 2 should take place, and only 2 getters should be active" do
     params = {
       post: {
-        title: 'altered title', body: 'altered body', user_id: 666
+        title: 'altered title', body: 'altered body', user_id: 666, author: 'test', email: 'test@gmail.com', date: '20-10-2010'
       }
     }
 
@@ -120,15 +126,23 @@ describe PostForm::Son do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
+    described_class.exposed_getters.should == [:title, :email, :author, :body, :date]
+    described_class.exposed_setters.should == [:title, :user_id]
 
     Post.all.count.should == 1
     post = Post.first
     post.title.should == 'altered title'
     post.body.should == 'post body'
-    post.user_id.should == 1
+    post.user_id.should == 666
+    post.respond_to?(:author).should == false
+    post.respond_to?(:email).should == false
+    post.respond_to?(:date).should == false
 
     post_form.title.should == 'altered title'
     post_form.body.should == 'post body'
+    post_form.author.should == 'test'
+    post_form.email.should == 'test@gmail.com'
+    post_form.date.should == '20-10-2010'
     post_form.respond_to?(:user_id).should == false
   end
 

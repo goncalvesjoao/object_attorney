@@ -18,7 +18,23 @@ module ObjectAttorney
       _setters.each { |getter| delegate_setter(getter) }
     end
 
-    
+    def exposed_getters
+      @exposed_getters ||= (zuper_method(:exposed_getters) || [])
+    end
+
+    def add_exposed_getters(*getters)
+      exposed_getters.push(*getters) unless exposed_getters.include?(getters)
+    end
+
+    def exposed_setters
+      @exposed_setters ||= (zuper_method(:exposed_setters) || [])
+    end
+
+    def add_exposed_setters(*setters)
+      exposed_setters.push(*setters) unless exposed_setters.include?(setters)
+    end
+
+
     protected ##################### PROTECTED #####################
 
     def delegate_property(property)
@@ -28,10 +44,12 @@ module ObjectAttorney
 
     def delegate_getter(getter)
       delegate getter, to: :represented_object
+      add_exposed_getters(getter)
     end
 
     def delegate_setter(setter)
       delegate "#{setter}=", to: :represented_object
+      add_exposed_setters(setter)
     end
 
   end

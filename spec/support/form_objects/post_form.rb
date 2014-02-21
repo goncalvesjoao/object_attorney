@@ -93,10 +93,22 @@ module PostForm
 
   class Father < GrandFather
     properties :title
+
+    add_exposed_getters :email, :author
+
+    attr_accessor :email, :author
   end
 
   class Son < Father
     getters :body
+  end
+
+  class GrandSon < Son
+    setters :user_id
+
+    add_exposed_getters :date
+
+    attr_accessor :date
   end
 
 end
