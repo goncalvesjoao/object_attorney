@@ -20,7 +20,11 @@ module ObjectAttorney
     module ClassMethods
       
       def exposed_getters
-        @exposed_getters ||= (zuper_method(:exposed_getters) || [])
+        return @exposed_getters if defined?(@exposed_getters)
+
+        @exposed_getters = zuper_method(:exposed_getters)
+        
+        @exposed_getters ||= represented_object_class.present? && represented_object_class.method_defined?(:id) ? [:id] : []
       end
 
       def add_exposed_getters(*getters)

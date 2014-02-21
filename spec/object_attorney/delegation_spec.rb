@@ -14,8 +14,6 @@ shared_examples "a PostForm with delegated properties" do
     post_form = described_class.new(params[:post])
 
     post_form.save.should == true
-    described_class.exposed_getters.should == [:title, :user_id]
-    described_class.exposed_setters.should == [:title, :user_id]
 
     Post.all.count.should == 1
     post = Post.first
@@ -49,8 +47,6 @@ shared_examples "a PostForm with only delegated getters" do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
-    described_class.exposed_getters.should == [:title, :user_id]
-    described_class.exposed_setters.should == []
 
     Post.all.count.should == 1
     post = Post.first
@@ -88,8 +84,6 @@ shared_examples "a PostForm with only delegated setters" do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
-    described_class.exposed_getters.should == []
-    described_class.exposed_setters.should == [:title, :user_id]
 
     Post.all.count.should == 1
     post = Post.first
