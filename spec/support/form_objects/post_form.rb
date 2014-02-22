@@ -50,6 +50,12 @@ module PostForm
   end
   
 
+  class Presenter
+    include ObjectAttorney
+    represents :post, delegate_missing_methods: true, properties: [:title]
+  end
+
+
   class Properties1
     include ObjectAttorney
     represents :post

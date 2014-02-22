@@ -2,6 +2,14 @@ module ObjectAttorney
 
   module Delegation
 
+    module MissingMethods
+
+      def method_missing(method, *args, &block)
+        represented_object.send(method, *args, &block)
+      end
+
+    end
+
     def zuper_method(method_name, *args)
       self.superclass.send(method_name, *args) if self.superclass.respond_to?(method_name)
     end

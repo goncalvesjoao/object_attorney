@@ -62,6 +62,8 @@ module ObjectAttorney
         properties(*options[:properties]) if options.include?(:properties)
         getters(*options[:getters]) if options.include?(:getters)
         setters(*options[:setters]) if options.include?(:setters)
+
+        class_eval { include Delegation::MissingMethods } if options[:delegate_missing_methods]
       end
 
       def represented_object_reflection

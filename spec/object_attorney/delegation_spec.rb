@@ -1,5 +1,39 @@
 require "spec_helper"
 
+describe PostForm::Presenter do
+
+  it "1. Editing a 'Post', through one property and delegating all missing methods to the represented object", current: true do
+    params = {
+      post: {
+        title: 'altered title',
+        body: 'altered body',
+        user_id: 666        
+      }
+    }
+
+    post = Post.create({ title: 'First post', body: 'post body', user_id: 1 })
+
+    post_form = described_class.new(params[:post], post)
+
+    post_form.save.should == true
+
+    Post.all.count.should == 1
+    post = Post.first
+    post.title.should == 'altered title'
+    post.body.should == 'post body'
+    post.user_id.should == 1
+
+    post_form.title.should == 'altered title'
+    post_form.body.should == 'post body'
+    post_form.user_id.should == 1
+
+    post_form.user_id = 665
+    post_form.user_id.should == 665
+  end
+
+end
+
+
 shared_examples "a PostForm with delegated properties" do
 
   it "1. Creating a 'Post' with 3 params, but only 2 are delegated" do
@@ -38,7 +72,9 @@ shared_examples "a PostForm with only delegated getters" do
   it "1. Editing a 'Post' with 3 params, no changes should take place but the getters should" do
     params = {
       post: {
-        title: 'altered title', body: 'altered body', user_id: 666        
+        title: 'altered title',
+        body: 'altered body',
+        user_id: 666        
       }
     }
 
