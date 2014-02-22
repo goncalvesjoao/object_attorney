@@ -9,7 +9,7 @@ module ObjectAttorney
       end
     end
 
-    def to_json(options = {})
+    def to_hash(options = {})
       serializable_hash(options)
     end
 
