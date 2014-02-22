@@ -100,7 +100,7 @@ module PostForm
   class Father < GrandFather
     properties :title
 
-    add_exposed_data :email, :author
+    add_attribute_key :email, :author
 
     attr_accessor :email, :author
   end
@@ -112,7 +112,7 @@ module PostForm
   class GrandSon < Son
     setters :user_id
 
-    add_exposed_data :date
+    add_attribute_key :date
 
     attr_accessor :date
   end

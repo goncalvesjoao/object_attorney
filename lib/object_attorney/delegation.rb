@@ -36,7 +36,7 @@ module ObjectAttorney
 
     def delegate_getter(getter)
       delegate getter, to: :represented_object
-      add_exposed_data getter
+      add_attribute_key getter
     end
 
     def delegate_setter(setter)

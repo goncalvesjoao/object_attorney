@@ -1,7 +1,6 @@
 
 require "object_attorney/attribute_assignment"
 require "object_attorney/delegation"
-require "object_attorney/exposed_data"
 require "object_attorney/helpers"
 require "object_attorney/naming"
 require "object_attorney/reflection"
@@ -10,6 +9,7 @@ require "object_attorney/nested_objects"
 require "object_attorney/record"
 require "object_attorney/translation"
 require "object_attorney/representation"
+require "object_attorney/serialization"
 require 'active_record'
 
 require "object_attorney/version"
@@ -49,7 +49,7 @@ module ObjectAttorney
       include NestedObjects
       include Record
       include Representation
-      include ExposedData
+      include Serialization
 
       validate :validate_represented_object
     end
