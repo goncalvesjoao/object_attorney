@@ -14,8 +14,7 @@ describe PostForm::GrandSon do
     post_form = described_class.new(params[:post], post)
 
     post_form.save.should == true
-    described_class.exposed_getters.should == [:id, :title, :email, :author, :body, :date]
-    described_class.exposed_setters.should == [:title, :user_id]
+    described_class.exposed_data.should == [:id, :title, :email, :author, :body, :date]
 
     Post.all.count.should == 1
     post = Post.first
@@ -35,7 +34,7 @@ describe PostForm::GrandSon do
     
     data = { id:1, title: "altered title", email: "test@gmail.com", author: "test", body: "post body", date: "20-10-2010" }
 
-    post_form.exposed_data.should == data
+    post_form.to_hash.should == data
     post_form.to_json.should == data.to_json
   end
 

@@ -28,12 +28,11 @@ module ObjectAttorney
 
     def delegate_getter(getter)
       delegate getter, to: :represented_object
-      add_exposed_getters(getter)
+      add_exposed_data getter
     end
 
     def delegate_setter(setter)
       delegate "#{setter}=", to: :represented_object
-      add_exposed_setters(setter)
     end
 
   end

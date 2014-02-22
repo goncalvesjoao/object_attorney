@@ -2,15 +2,15 @@ module ObjectAttorney
 
   module ExposedData
 
-    def exposed_data
-      self.class.exposed_getters.reduce({}) do |data, getter|
+    def to_hash
+      self.class.exposed_data.reduce({}) do |data, getter|
         data[getter] = send(getter)
         data
       end
     end
 
     def to_json(options = {})
-      exposed_data.to_json
+      to_hash.to_json
     end
 
     def self.included(base)
@@ -19,24 +19,16 @@ module ObjectAttorney
 
     module ClassMethods
       
-      def exposed_getters
-        return @exposed_getters if defined?(@exposed_getters)
+      def exposed_data
+        return @exposed_data if defined?(@exposed_data)
 
-        @exposed_getters = zuper_method(:exposed_getters)
+        @exposed_data = zuper_method(:exposed_data)
         
-        @exposed_getters ||= represented_object_class.present? && represented_object_class.method_defined?(:id) ? [:id] : []
+        @exposed_data ||= represented_object_class.present? && represented_object_class.method_defined?(:id) ? [:id] : []
       end
 
-      def add_exposed_getters(*getters)
-        exposed_getters.push(*getters) unless exposed_getters.include?(getters)
-      end
-
-      def exposed_setters
-        @exposed_setters ||= (zuper_method(:exposed_setters) || [])
-      end
-
-      def add_exposed_setters(*setters)
-        exposed_setters.push(*setters) unless exposed_setters.include?(setters)
+      def add_exposed_data(*getters)
+        exposed_data.push(*getters) unless exposed_data.include?(getters)
       end
 
     end

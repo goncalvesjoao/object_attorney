@@ -30,7 +30,6 @@ require 'support/form_objects/bulk_posts_allow_only_existing_form'
 require 'support/form_objects/bulk_posts_allow_only_new_form'
 require 'support/form_objects/bulk_posts_with_form_objects_form'
 require 'support/form_objects/user_form'
-require 'support/form_objects/user_form_with_ruby_errors'
 
 RSpec.configure do |config|
   #config.treat_symbols_as_metadata_keys_with_true_values = true
