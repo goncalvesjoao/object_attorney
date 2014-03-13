@@ -161,12 +161,12 @@ module ObjectAttorney
 
       return nil if reflection.options[:new_records] == false
       
-      if can_represented_object_build_nested?(reflection, nested_object_name)
+      if reflection.options[:standalone] == true || !can_represented_object_build_nested?(reflection, nested_object_name)
+        new_nested_object = reflection.klass.new(attributes)
+      else
         new_nested_object = build_from_represented_object(reflection, nested_object_name)
 
         new_nested_object = assign_attributes_or_build_nested_object(reflection, attributes, new_nested_object)
-      else
-        new_nested_object = reflection.klass.new(attributes)
       end
 
       populate_foreign_key(self, new_nested_object, reflection, :has_many)
@@ -205,6 +205,8 @@ module ObjectAttorney
       nested_relection = self.class.reflect_on_association(nested_object_name)
 
       return [] if nested_relection.options[:existing_records] == false
+
+      return (nested_relection.klass.try(:all) || []) if nested_relection.options[:standalone] == true
 
       existing = represented_object.nil? ? (nested_relection.klass.try(:all) || []) : (represented_object.send(nested_object_name) || (nested_relection.has_many? ? [] : nil))
       

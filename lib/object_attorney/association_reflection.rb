@@ -18,6 +18,8 @@ module ObjectAttorney
     end
 
     def set_relational_keys(origin, destination)
+      return nil if options[:standalone] == true
+      
       if has_many? || has_one?
         set_foreign_key(destination, primary_key_of(origin))
       elsif belongs_to?
