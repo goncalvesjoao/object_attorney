@@ -205,8 +205,10 @@ module ObjectAttorney
       nested_relection = self.class.reflect_on_association(nested_object_name)
 
       return [] if nested_relection.options[:existing_records] == false
-
-      return (nested_relection.klass.try(:all) || []) if nested_relection.options[:standalone] == true
+      
+      if nested_relection.options[:standalone] == true
+        return nested_relection.has_many? ? (nested_relection.klass.try(:all) || []) : nil
+      end
 
       existing = represented_object.nil? ? (nested_relection.klass.try(:all) || []) : (represented_object.send(nested_object_name) || (nested_relection.has_many? ? [] : nil))
       
