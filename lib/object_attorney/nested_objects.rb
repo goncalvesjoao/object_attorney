@@ -155,14 +155,18 @@ module ObjectAttorney
       end
     end
 
-    def build_nested_object(nested_object_name, attributes = {})
+    def build_nested_object(nested_object_name, attributes = {}, new_nested_object = nil)
       attributes = attributes.symbolize_keys
       reflection = self.class.reflect_on_association(nested_object_name)
 
       return nil if reflection.options[:new_records] == false
       
-      if reflection.options[:standalone] == true || !can_represented_object_build_nested?(reflection, nested_object_name)
+      if new_nested_object.present?
+        new_nested_object = assign_attributes_or_build_nested_object(reflection, attributes, new_nested_object)
+
+      elsif reflection.options[:standalone] == true || !can_represented_object_build_nested?(reflection, nested_object_name)
         new_nested_object = reflection.klass.new(attributes)
+
       else
         new_nested_object = build_from_represented_object(reflection, nested_object_name)
 
@@ -255,7 +259,7 @@ module ObjectAttorney
         self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
 
         define_method(nested_object_name) { nested_getter(nested_object_name) }
-        define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes) }
+        define_method("build_#{reflection.single_name}") { |attributes = {}, nested_object = nil| build_nested_object(nested_object_name, attributes, nested_object) }
         define_method("existing_#{nested_object_name}") { existing_nested_objects(nested_object_name) }
       end
 
