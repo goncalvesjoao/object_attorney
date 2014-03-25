@@ -75,7 +75,7 @@ module ObjectAttorney
       end
 
       def represented_object_reflect_on_association(association)
-        return nil if represented_object_class.nil?
+        return nil if represented_object_class.nil? || !represented_object_class.respond_to?(:reflect_on_association)
 
         represented_object_class.reflect_on_association(association)
       end
