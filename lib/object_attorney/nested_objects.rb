@@ -35,6 +35,15 @@ module ObjectAttorney
       nested_objects_list
     end
 
+    def reset_nested_objects(reflection_name = nil)
+      self.class.reflect_on_all_associations.each do |reflection|
+        next if !reflection_name.nil? && reflection_name != reflection.name
+
+        self.instance_variable_set("@#{reflection.name}_attributes", {})
+        self.instance_variable_set("@#{reflection.name}", nil)
+      end
+    end
+
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
     def save_or_destroy_nested_objects(save_method, association_macro)

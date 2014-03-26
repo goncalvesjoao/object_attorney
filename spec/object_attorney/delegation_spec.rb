@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe PostForm::Presenter do
 
-  it "1. Editing a 'Post', through one property and delegating all missing methods to the represented object", current: true do
+  it "1. Editing a 'Post', through one property and delegating all missing methods to the represented object" do
     params = {
       post: {
         title: 'altered title',
