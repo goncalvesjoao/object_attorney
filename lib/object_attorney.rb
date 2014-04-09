@@ -23,7 +23,7 @@ module ObjectAttorney
 
     before_initialize(attributes)
 
-    @represented_object = object
+    @represented_object ||= object
 
     assign_attributes attributes
 
