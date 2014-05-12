@@ -39,7 +39,7 @@ module ObjectAttorney
       if object == self
         represented_object.present? ? represented_object.send(save_method) : true
       else
-        save_method = :destroy if check_if_marked_for_destruction?(object)
+        save_method = :destroy if Helpers.marked_for_destruction?(object)
         object.send(save_method)
       end
     end
@@ -54,7 +54,7 @@ module ObjectAttorney
 
     def populate_nested_imposed_errors
       nested_objects.each do |reflection, nested_object|
-        next if nested_object.marked_for_destruction?
+        next if Helpers.marked_for_destruction?(nested_object)
         
         nested_object.populate_imposed_errors
         
@@ -110,12 +110,6 @@ module ObjectAttorney
         end
       end
 
-    end
-
-    private #################### PRIVATE METHODS DOWN BELOW ######################
-
-    def check_if_marked_for_destruction?(object)
-      object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
     end
 
   end

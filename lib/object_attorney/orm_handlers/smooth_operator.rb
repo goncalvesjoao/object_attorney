@@ -28,7 +28,7 @@ module ObjectAttorney
         if object == self || object == represented_object
           represented_object.present? ? represented_object.send(save_method, options).ok? : true
         else
-          save_method = :destroy if check_if_marked_for_destruction?(object)
+          save_method = :destroy if Helpers.marked_for_destruction?(object)
           object.send(save_method, options).ok?
         end
       end

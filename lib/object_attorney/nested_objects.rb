@@ -84,7 +84,7 @@ module ObjectAttorney
     private #################### PRIVATE METHODS DOWN BELOW ######################
 
     def populate_foreign_key(origin, destination, reflection, macro)
-      return nil if represented_object.blank? || check_if_marked_for_destruction?(destination) || reflection.macro != macro
+      return nil if represented_object.blank? || Helpers.marked_for_destruction?(destination) || reflection.macro != macro
 
       reflection.set_relational_keys(origin, destination)
     end

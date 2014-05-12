@@ -7,7 +7,7 @@ module ActiveModel
         uniq_value, existing_objects, first_element = options[:uniq_value], [], nil
 
         record.send(attr_name).each do |object|
-          next if object.marked_for_destruction?
+          next if Helpers.marked_for_destruction?(object)
 
           first_element = object if first_element.nil?
 

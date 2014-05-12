@@ -13,7 +13,7 @@ module ObjectAttorney
     end
     
     def override_validations?
-      marked_for_destruction?
+      Helpers.marked_for_destruction?(self)
     end
 
     def clear_imposed_errors

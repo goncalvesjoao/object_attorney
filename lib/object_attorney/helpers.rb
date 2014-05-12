@@ -4,6 +4,10 @@ module ObjectAttorney
 
     extend self
 
+    def marked_for_destruction?(object)
+      object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
+    end
+
     def is_integer?(string)
       string.match(/^(\d)+$/)
     end
