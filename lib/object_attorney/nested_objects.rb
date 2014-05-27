@@ -263,7 +263,7 @@ module ObjectAttorney
         reflection = AssociationReflection.new(nested_object_name, represented_object_reflection, options)
 
         self.instance_variable_set("@#{nested_object_name}_reflection", reflection)
-        self.instance_variable_set("@association_reflections", association_reflections | [reflection])
+        self.instance_variable_set("@association_reflections", association_reflections.merge(nested_object_name => reflection))
 
         self.send(:attr_accessor, "#{nested_object_name}_attributes".to_sym)
 
@@ -273,7 +273,7 @@ module ObjectAttorney
       end
 
       def association_reflections
-        self.instance_variable_get("@association_reflections") || zuper_method('association_reflections') || []
+        self.instance_variable_get("@association_reflections") || zuper_method('association_reflections') || {}
       end
 
       def reflect_on_association(association)
@@ -281,9 +281,12 @@ module ObjectAttorney
       end
 
       def reflect_on_all_associations(macro = nil)
-        macro ? association_reflections.select { |reflection| reflection.macro == macro } : association_reflections
+        macro ? association_reflections.values.select { |reflection| reflection.macro == macro } : association_reflections.values
       end
 
+      def reflections
+        association_reflections
+      end
 
       private ############################### PRIVATE METHODS ###########################
 
