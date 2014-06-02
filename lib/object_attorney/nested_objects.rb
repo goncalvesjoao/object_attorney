@@ -48,7 +48,7 @@ module ObjectAttorney
 
     def save_or_destroy_nested_objects(save_method, association_macro)
       nested_objects(association_macro).map do |reflection, nested_object|
-        
+
         populate_foreign_key(self, nested_object, reflection, :has_many)
         populate_foreign_key(self, nested_object, reflection, :has_one)
 
@@ -73,7 +73,7 @@ module ObjectAttorney
 
     def get_attributes_for_existing(nested_object_name, existing_nested_object)
       attributes = send("#{nested_object_name}_attributes")
-      
+
       if attributes.present?
         (attributes.values.select { |x| x[:id].to_i == existing_nested_object.id }.first || {}).symbolize_keys
       else
@@ -134,7 +134,7 @@ module ObjectAttorney
 
     def get_existing_and_new_nested_objects(nested_object_name)
       existing_and_new_nested_objects = []
-      
+
       update_existing_nested_objects(existing_and_new_nested_objects, nested_object_name)
       build_new_nested_objects(existing_and_new_nested_objects, nested_object_name)
 
@@ -169,7 +169,7 @@ module ObjectAttorney
       reflection = self.class.reflect_on_association(nested_object_name)
 
       return nil if reflection.options[:new_records] == false
-      
+
       if new_nested_object.present?
         new_nested_object = assign_attributes_or_build_nested_object(reflection, attributes, new_nested_object)
 
@@ -200,7 +200,7 @@ module ObjectAttorney
 
     def can_represented_object_build_nested?(reflection, nested_object_name)
       return false if represented_object.blank?
-      
+
       represented_object.respond_to?("build_#{nested_object_name}") || represented_object.send(nested_object_name).respond_to?(:build)
     end
 
@@ -218,18 +218,18 @@ module ObjectAttorney
       nested_relection = self.class.reflect_on_association(nested_object_name)
 
       return [] if nested_relection.options[:existing_records] == false
-      
+
       if nested_relection.options[:standalone] == true
         return nested_relection.has_many? ? (nested_relection.klass.try(:all) || []) : nil
       end
 
       existing = represented_object.nil? ? (nested_relection.klass.try(:all) || []) : (represented_object.send(nested_object_name) || (nested_relection.has_many? ? [] : nil))
-      
+
       if represented_object.present?
         if self.class.represented_object_class.respond_to?(:reflect_on_association)
           existing = _existing_in_form_objects(existing, nested_relection) if nested_relection.klass != self.class.represented_object_class.reflect_on_association(nested_object_name).try(:klass)
         else
-          existing = _existing_in_form_objects(existing, nested_relection) 
+          existing = _existing_in_form_objects(existing, nested_relection)
         end
       end
 

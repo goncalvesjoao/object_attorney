@@ -6,6 +6,7 @@ module ObjectAttorney
       return if attributes.blank?
 
       attributes.each do |name, value|
+        name, value = check_for_hidden_nested_attributes(name, value)
         send("#{name}=", value) if allowed_attribute(name)
       end
 
@@ -14,6 +15,25 @@ module ObjectAttorney
 
     protected #################### PROTECTED METHODS DOWN BELOW ######################
 
+    def check_for_hidden_nested_attributes(name, value)
+      name_sym = name.to_sym
+
+      reflection = self.class.reflect_on_association(name_sym)
+
+      if reflection
+        if reflection.has_many? && value.is_a?(Array)
+          hash = {}
+          value.each_with_index do |_value, index|
+            hash[index.to_s] = _value
+          end
+          value = hash
+        end
+        name = "#{name}_attributes"
+      end
+
+      [name, value]
+    end
+
     def parsing_arguments(attributes, object)
       if !attributes.is_a?(Hash) && object.blank?
         object = attributes
@@ -21,7 +41,7 @@ module ObjectAttorney
       end
 
       attributes = {} if attributes.blank?
-      
+
       [attributes.symbolize_keys, object]
     end
 
