@@ -18,6 +18,7 @@ require 'support/models/post'
 require 'support/models/user'
 
 require 'support/form_objects/post_form'
+require 'support/form_objects/address_form'
 require 'support/form_objects/post_validations_form'
 require 'support/form_objects/comment_form'
 require 'support/form_objects/post_with_comment_form'
@@ -35,7 +36,7 @@ require 'support/form_objects/user_form'
 RSpec.configure do |config|
   #config.treat_symbols_as_metadata_keys_with_true_values = true
   #config.filter_run :current
-  
+
   I18n.enforce_available_locales = false
 
   # see: http://iain.nl/testing-activerecord-in-isolation
