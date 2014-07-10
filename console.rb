@@ -12,4 +12,6 @@ address_attributes = {
 
 p = PostWithCommentsAndAddressForm.new(address_attributes: address_attributes)
 
+a = AddressForm.new(post_attributes: { title: 'asd', body: 'body' })
+
 binding.pry

@@ -16,6 +16,7 @@ require 'support/models/post'
 require 'support/models/user'
 
 require 'support/form_objects/post_form'
+require 'support/form_objects/address_form'
 require 'support/form_objects/post_validations_form'
 require 'support/form_objects/comment_form'
 require 'support/form_objects/post_with_comment_form'
