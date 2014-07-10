@@ -4,6 +4,6 @@ class AddressForm
 
   represents :address, properties: [:street, :city]
 
-  belongs_to :post
+  belongs_to :post, class_name: PostForm::Base
 
 end

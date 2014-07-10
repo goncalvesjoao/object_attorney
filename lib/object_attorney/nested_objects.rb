@@ -239,8 +239,10 @@ module ObjectAttorney
     def _existing_in_form_objects(existing, nested_relection)
       if existing.respond_to?(:map)
         existing.map { |existing_nested_object| nested_relection.klass.new({}, existing_nested_object) }
-      else
+      elsif existing.present?
         nested_relection.klass.new({}, existing)
+      else
+        nil
       end
     end
 
