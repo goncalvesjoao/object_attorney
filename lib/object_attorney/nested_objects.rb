@@ -10,10 +10,16 @@ module ObjectAttorney
     end
 
     def mark_for_destruction
+      represented_object.respond_to?(:mark_for_destruction) && represented_object.mark_for_destruction
+
       @marked_for_destruction = true
     end
 
     def marked_for_destruction?
+      if represented_object.respond_to?(:marked_for_destruction?) && represented_object.marked_for_destruction?
+        @marked_for_destruction = true
+      end
+
       @marked_for_destruction
     end
 
