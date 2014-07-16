@@ -189,6 +189,7 @@ module ObjectAttorney
       end
 
       populate_foreign_key(self, new_nested_object, reflection, :has_many)
+      new_nested_object.extend(Validations) unless new_nested_object.respond_to?(:represented_object)
 
       new_nested_object
     end
