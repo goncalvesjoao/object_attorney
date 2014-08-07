@@ -20,7 +20,7 @@ module ObjectAttorney
 
     def validate_represented_object
       represented_object_valid = Helpers.try_or_return(represented_object, :valid?, true)
-      
+
       load_errors_from represented_object.errors unless represented_object_valid
 
       nested_valid = add_errors_entry_if_nested_invalid
@@ -47,18 +47,24 @@ module ObjectAttorney
 
       nested_vs_invalid.empty?
     end
-    
+
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
 
+      def table_name
+        self.instance_variable_get("@table_name") || represented_object_class.try(:table_name)
+      end
+
+      attr_writer :table_name
+
       def represents(represented_object_name, options = {})
         self.instance_variable_set("@represented_object_reflection", Reflection.new(represented_object_name, options))
 
         define_method(represented_object_name) { represented_object }
-        
+
         properties(*options[:properties]) if options.include?(:properties)
         getters(*options[:getters]) if options.include?(:getters)
         setters(*options[:setters]) if options.include?(:setters)
