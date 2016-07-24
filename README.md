@@ -1,29 +1,36 @@
-# ObjectAttorney
+# Object Attorney
 
-TODO: Write a gem description
 
-## Installation
+[![Code Climate](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/gpa.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney)
+[![Test Coverage](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/coverage.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney/coverage)
+[![Build Status](https://travis-ci.org/goncalvesjoao/object_attorney.svg?branch=master)](https://travis-ci.org/goncalvesjoao/object_attorney)
 
-Add this line to your application's Gemfile:
+## 1) Basic Usage
+```ruby
+class User < Struct.new(:title, :first_name, :last_name)
+end
+```
 
-    gem 'object_attorney'
+```ruby
+class UserValidator < Struct.new(:user)
+  include ObjectAttorney
 
-And then execute:
+  defend :user
 
-    $ bundle
+  validates_presence_of :first_name
+end
 
-Or install it yourself as:
+# OR
 
-    $ gem install object_attorney
+class UserValidator < ObjectAttorney::Base
+  validates_presence_of :first_name
+end
+```
 
-## Usage
+```ruby
+@user = User.new
 
-TODO: Write usage instructions here
+UserValidator.new(@user).valid?
 
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+@user.errors.messages # { first_name: ["can't be blank"] }
+```
