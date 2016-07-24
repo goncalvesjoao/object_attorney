@@ -1,36 +1,37 @@
+require 'object_attorney/errors'
+
 module ObjectAttorney
 
   module Helpers
 
-    extend self
+    module_function
 
     def marked_for_destruction?(object)
-      object.respond_to?(:marked_for_destruction?) ? object.marked_for_destruction? : false
+      return false unless object.respond_to?(:marked_for_destruction?)
+
+      object.marked_for_destruction?
     end
 
-    def is_integer?(string)
-      string.match(/^(\d)+$/)
-    end
-    
-    def singularize(class_name)
-      class_name = class_name.to_s
-      plural?(class_name) ? class_name.singularize : class_name
-    end
-
-    def plural?(string)
-      string = string.to_s
-      string == string.pluralize
+    def call_proc_or_method(base, proc_or_method, object = nil)
+      if proc_or_method.is_a?(Proc)
+        base.instance_exec(object, &proc_or_method)
+      else
+        base.send(proc_or_method, object)
+      end
     end
 
-    def try_or_return(object, method, default_value)
-      returning_value = object.try(method)
-      returning_value.nil? ? default_value : returning_value
+    def safe_call_method(base, method)
+      return nil unless base.respond_to?(method)
+
+      base.send(method)
     end
 
-    def has_errors_method?(object)
-      object.present? && object.respond_to?(:errors) && !object.errors.nil?
+    def extend_errors_if_necessary(object)
+      return if object.respond_to?(:errors)
+
+      object.class.class_eval { include Errors }
     end
-    
+
   end
-  
+
 end

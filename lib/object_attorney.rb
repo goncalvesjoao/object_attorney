@@ -1,66 +1,79 @@
-
-require "object_attorney/attribute_assignment"
-require "object_attorney/delegation"
-require "object_attorney/helpers"
-require "object_attorney/naming"
-require "object_attorney/reflection"
-require "object_attorney/validations"
-require "object_attorney/nested_objects"
-require "object_attorney/record"
-require "object_attorney/translation"
-require "object_attorney/representation"
-require "object_attorney/serialization"
-require 'active_record'
-
-require "object_attorney/version"
+require 'active_model'
+require 'object_attorney/version'
+require 'object_attorney/helpers'
+require 'object_attorney/class_methods'
 
 module ObjectAttorney
 
-  def initialize(attributes = {}, object = nil)
-    initialize_nested_attributes
-
-    attributes, object = parsing_arguments(attributes, object)
-
-    before_initialize(attributes)
-
-    @represented_object ||= object
-
-    assign_attributes attributes
-
-    after_initialize(attributes)
+  def self.included(base_class)
+    base_class.extend ClassMethods
+    base_class.extend ActiveModel::Validations::HelperMethods
   end
 
-  protected #################### PROTECTED METHODS DOWN BELOW ######################
-
-  def before_initialize(attributes); end
-
-  def after_initialize(attributes); end
-
-  private #################### PRIVATE METHODS DOWN BELOW ######################
-
-  def self.included(base)
-    base.class_eval do
-      include ActiveModel::Validations
-      include ActiveModel::Validations::Callbacks
-      include ActiveModel::Conversion
-
-      include AttributeAssignment
-      include Validations
-      include NestedObjects
-      include Record
-      include Representation
-      include Serialization
-
-      validate :validate_represented_object
+  def defendant_is_innocent?
+    proven_innocent = defendants.all? do |defendant|
+      innocent_of_all_accusations?(defendant)
     end
 
-    base.extend(ClassMethods)
+    make_the_parent_guilty unless proven_innocent
+
+    proven_innocent
   end
 
-  module ClassMethods
-    include Naming
-    include Delegation
-    include Translation
+  alias valid? defendant_is_innocent?
+
+  def invalid?
+    !valid?
+  end
+
+  protected ######################### PROTECTED ################################
+
+  def defendants
+    defendant = Helpers.safe_call_method(self, defendant_options[:name])
+
+    if parent_defendant
+      Helpers.extend_errors_if_necessary(parent_defendant)
+
+      defendant ||= parent_defendant.send(defendant_options[:name])
+    end
+
+    [defendant].flatten.compact
+  end
+
+  def innocent_of_all_accusations?(defendant)
+    Helpers.extend_errors_if_necessary(defendant)
+
+    return true if Helpers.marked_for_destruction?(defendant)
+
+    founded_accusations(defendant).all?(&:sustained?)
+
+    defendant.errors.empty?
+  end
+
+  def make_the_parent_guilty
+    return unless parent_defendant
+
+    parent_defendant.errors.add(defendant_options[:name], :invalid)
+  end
+
+  private ############################ PRIVATE #################################
+
+  def parent_defendant
+    return nil unless defendant_options[:in]
+
+    @parent_defendant ||= send(defendant_options[:in])
+  end
+
+  def defendant_options
+    self.class.defendant_options
+  end
+
+  def founded_accusations(defendant)
+    self.class.allegations.values.flatten.uniq.map do |allegation|
+      allegation.founded_accusation(self, defendant)
+    end.compact
   end
 
 end
+
+require 'object_attorney/base'

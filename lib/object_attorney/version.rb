@@ -1,3 +1,5 @@
 module ObjectAttorney
-  VERSION = "2.10.12"
+
+  VERSION = '3.0.0'.freeze
+
 end
