@@ -29,12 +29,12 @@ module ObjectAttorney
   protected ######################### PROTECTED ################################
 
   def defendants
-    defendant = Helpers.safe_call_method(self, defendant_options[:name])
-
-    if parent_defendant
+    defendant = if parent_defendant
       Helpers.extend_errors_if_necessary(parent_defendant)
 
-      defendant ||= parent_defendant.send(defendant_options[:name])
+      Helpers.call_method!(parent_defendant, defendant_options[:name])
+    else
+      Helpers.call_method!(self, defendant_options[:name])
     end
 
     [defendant].flatten.compact

@@ -10,8 +10,8 @@ Gem::Specification.new do |gem|
   gem.license = 'MIT'
   gem.authors = ['João Gonçalves']
   gem.email = ['goncalves.joao@gmail.com']
-  gem.summary = 'Ruby Form Object pattern implementation'
-  gem.description = "This gem allows you to extract the code responsible for 'validations', 'nested objects' and 'strong parameters' from your model onto a specific class for a specific use case."
+  gem.summary = 'Allows you to keep your ActiveModel validations out of your objects'
+  gem.description = 'This gem allows you to create use cases with ActiveModel validations and keep your model clean'
   gem.homepage = 'https://github.com/streetbees/object_attorney'
 
   gem.files = `git ls-files`.split($/)
@@ -24,8 +24,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '3.4.0'
   gem.add_development_dependency 'rubocop', '0.37.2'
   gem.add_development_dependency 'simplecov', '0.11.2'
-  gem.add_development_dependency 'activemodel', '4.2.6'
   gem.add_development_dependency 'codeclimate-test-reporter', '0.4.8'
 
-  # gem.add_dependency 'i18n', '~> 0.7'
+  gem.add_dependency 'activemodel', '~> 3'
 end

@@ -16,14 +16,16 @@ module ObjectAttorney
       if proc_or_method.is_a?(Proc)
         base.instance_exec(object, &proc_or_method)
       else
-        base.send(proc_or_method, object)
+        call_method!(base, proc_or_method, object)
       end
     end
 
-    def safe_call_method(base, method)
-      return nil unless base.respond_to?(method)
+    def call_method!(base, method, *args)
+      unless base.respond_to?(method)
+        raise NotImplementedError, "#{base} does not respond to #{method}"
+      end
 
-      base.send(method)
+      base.send(method, *args)
     end
 
     def extend_errors_if_necessary(object)

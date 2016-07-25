@@ -9,9 +9,10 @@ module ObjectAttorney
         attribute
       end
 
-      def lookup_ancestors
-        [self]
-      end
+      # Having doubts if this is really necessary
+      # def lookup_ancestors
+      #   [self]
+      # end
     end
 
     def self.included(base_class)

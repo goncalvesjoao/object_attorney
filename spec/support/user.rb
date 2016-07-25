@@ -1,5 +1,9 @@
-class User < Struct.new(:first_name, :phone_number, :dont_validate)
+class User
 
-  attr_accessor :posts
+  attr_accessor :first_name, :phone_number, :dont_validate, :posts
+
+  def initialize(attributes = {})
+    (attributes || {}).each { |name, value| send("#{name}=", value) }
+  end
 
 end

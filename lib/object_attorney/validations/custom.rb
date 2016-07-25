@@ -14,7 +14,9 @@ module ObjectAttorney
       end
 
       def validate(defendant)
-        [*@methods].map { |method| @attorney.send(method, defendant) }.all?
+        [*@methods].all? do |method|
+          Helpers.call_method!(@attorney, method, defendant)
+        end
       end
 
     end

@@ -25,7 +25,7 @@ describe ObjectAttorney do
 
     context "given a user with an invalid phone_number" do
       before do
-        @user = User.new('jon', 'bad number')
+        @user = User.new(phone_number: 'bad number')
         @custom_validator.new(@user).valid?
       end
 
@@ -35,7 +35,7 @@ describe ObjectAttorney do
 
       context "and preventing the validation" do
         before do
-          @user = User.new('jon', 'really bad number', true)
+          @user = User.new(phone_number: 'really bad number', dont_validate: true)
           @custom_validator.new(@user).valid?
         end
 
@@ -47,7 +47,7 @@ describe ObjectAttorney do
 
     context "given a user with a valid phone_number" do
       before do
-        @user = User.new('jon', '123 123')
+        @user = User.new(phone_number: '123 123')
         @custom_validator.new(@user).valid?
       end
 
