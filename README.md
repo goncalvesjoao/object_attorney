@@ -4,6 +4,7 @@ This gem allows you to create use cases with ActiveModel validations and keep yo
 [![Code Climate](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/gpa.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney)
 [![Test Coverage](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/coverage.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney/coverage)
 [![Build Status](https://travis-ci.org/goncalvesjoao/object_attorney.svg?branch=master)](https://travis-ci.org/goncalvesjoao/object_attorney)
+[![Gem Version](https://badge.fury.io/rb/object_attorney.svg)](https://badge.fury.io/rb/object_attorney)
 
 ## 1) Basic Usage
 ```ruby
