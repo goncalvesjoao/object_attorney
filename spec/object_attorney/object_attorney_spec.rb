@@ -137,28 +137,89 @@ describe ObjectAttorney do
 
     context "when a use case inherits from another that has a dependant and a validation" do
       before do
-        @user = User.new
+        @user1 = User.new
+        @user2 = User.new
+        @user3 = User.new
+        @user4 = User.new
 
-        @user_validator1 = Struct.new(:user) do
+        @user_validator1 = Class.new do
           include ObjectAttorney
 
           defend :user
 
           validates_presence_of :first_name
+
+          attr_accessor :user
+
+          def initialize(user)
+            @user = user
+          end
         end
 
         @user_validator2 = Class.new(@user_validator1) do
           validates_presence_of :phone_number
         end
 
-        @user_validator2.new(@user).invalid?
+        @user_validator3 = Class.new(@user_validator2) do
+          defend :users
+
+          attr_accessor :users
+
+          def initialize(users)
+            @users = users
+          end
+        end
+
+        @user_validator1.new(@user1).valid?
+        @user_validator2.new(@user2).valid?
+        @user_validator3.new([@user3, @user4]).valid?
       end
 
-      it "@user.errors should mention first_name and phone_number" do
-        expect(@user.errors.messages).to eq({
+      it "@user_validator1.defendant_options should mention :user" do
+        expect(@user_validator1.defendant_options).to eq({ name: :user })
+      end
+
+      it "@user_validator2.defendant_options should mention :user" do
+        expect(@user_validator2.defendant_options).to eq({ name: :user })
+      end
+
+      it "@user_validator3.defendant_options should mention :users" do
+        expect(@user_validator3.defendant_options).to eq({ name: :users })
+      end
+
+      it "@user1.errors should ONLY mention first_name" do
+        expect(@user1.errors.count).to be 1
+
+        expect(@user1.errors.messages).to eq({
+          first_name: ["can't be blank"]
+        })
+      end
+
+      it "@user2.errors should mention first_name and phone_number" do
+        expect(@user2.errors.messages).to eq({
           first_name: ["can't be blank"],
           phone_number: ["can't be blank"]
         })
+
+        expect(@user2.errors.count).to be 2
+      end
+
+      it "@user3.errors should mention first_name and phone_number" do
+        expect(@user3.errors.messages).to eq({
+          first_name: ["can't be blank"],
+          phone_number: ["can't be blank"]
+        })
+
+        expect(@user3.errors.count).to be 2
+      end
+
+      it "@user4.errors should mention first_name and phone_number" do
+        expect(@user4.errors.messages).to eq({
+          first_name: ["can't be blank"],
+          phone_number: ["can't be blank"]
+        })
+
+        expect(@user4.errors.count).to be 2
       end
     end
 

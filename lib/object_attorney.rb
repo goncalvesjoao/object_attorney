@@ -11,9 +11,9 @@ module ObjectAttorney
   end
 
   def defendant_is_innocent?
-    proven_innocent = defendants.all? do |defendant|
+    proven_innocent = defendants.map do |defendant|
       innocent_of_all_accusations?(defendant)
-    end
+    end.all?
 
     make_the_parent_guilty unless proven_innocent
 
