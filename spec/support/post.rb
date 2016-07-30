@@ -1,5 +1,4 @@
 class Post
-
   attr_accessor :title, :_destroy
 
   def initialize(attributes = {})
@@ -9,5 +8,4 @@ class Post
   def marked_for_destruction?
     _destroy
   end
-
 end

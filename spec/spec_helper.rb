@@ -1,20 +1,20 @@
-require "codeclimate-test-reporter"
+require 'codeclimate-test-reporter'
 
 CodeClimate::TestReporter.start
 
-require "simplecov"
+require 'simplecov'
 
 SimpleCov.start do
-  root("lib/")
-  coverage_dir("../tmp/coverage/")
+  root('lib/')
+  coverage_dir('../tmp/coverage/')
 end
 
-$: << File.expand_path('../', File.dirname(__FILE__))
+$LOAD_PATH << File.expand_path('../', File.dirname(__FILE__))
 
 require 'pry'
 require 'object_attorney'
 
-Dir["./spec/**/support/**/*.rb"].each do |file|
+Dir['./spec/**/support/**/*.rb'].each do |file|
   require file
 end
 

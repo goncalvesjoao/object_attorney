@@ -10,11 +10,13 @@ Gem::Specification.new do |gem|
   gem.license = 'MIT'
   gem.authors = ['João Gonçalves']
   gem.email = ['goncalves.joao@gmail.com']
-  gem.summary = 'Allows you to keep your ActiveModel validations out of your objects'
-  gem.description = 'This gem allows you to create use cases with ActiveModel validations and keep your model clean'
+  gem.summary = 'Allows you to keep your ActiveModel validations out' \
+                ' of your objects'
+  gem.description = 'This gem allows you to create use cases with ActiveModel' \
+                    ' validations and keep your model clean'
   gem.homepage = 'https://github.com/streetbees/object_attorney'
 
-  gem.files = `git ls-files`.split($/)
+  gem.files = Dir['README.md', 'lib/**/*']
   gem.executables = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.test_files = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']

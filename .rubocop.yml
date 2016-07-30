@@ -1,18 +1,9 @@
-Style/EmptyLinesAroundClassBody:
-  Enabled: false
-
-Style/EmptyLinesAroundModuleBody:
-  Enabled: false
-
 Style/FrozenStringLiteralComment:
   Enabled: false
 
 AllCops:
   DisplayCopNames: true
   Exclude:
-    - 'spec/**/*'
-    - 'Gemfile*'
-    - '*.gemspec'
     - 'vendor/**/*'
 
 Documentation:

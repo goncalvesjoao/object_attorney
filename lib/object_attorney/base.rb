@@ -1,7 +1,5 @@
 module ObjectAttorney
-
   class Base
-
     include ObjectAttorney
 
     defend :defendant
@@ -11,7 +9,5 @@ module ObjectAttorney
     def initialize(defendant)
       @defendant = defendant
     end
-
   end
-
 end

@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe ObjectAttorney::Base do
-
-  context "Initializing an attorney with an object" do
+  context 'Initializing an attorney with an object' do
     before do
       @user = User.new
 
@@ -13,9 +12,8 @@ describe ObjectAttorney::Base do
       @user_validator.new(@user).valid?
     end
 
-    it "should validate the object" do
-      expect(@user.errors.messages).to eq({ first_name: ["can't be blank"] })
+    it 'should validate the object' do
+      expect(@user.errors.messages).to eq(first_name: ["can't be blank"])
     end
   end
-
 end

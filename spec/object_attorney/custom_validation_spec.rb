@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe ObjectAttorney do
-
-  context "given an attorney with a custom validation" do
+  context 'given an attorney with a custom validation' do
     before do
       @custom_validator = Struct.new(:user) do
         include ObjectAttorney
@@ -23,38 +22,41 @@ describe ObjectAttorney do
       end
     end
 
-    context "given a user with an invalid phone_number" do
+    context 'given a user with an invalid phone_number' do
       before do
         @user = User.new(phone_number: 'bad number')
         @custom_validator.new(@user).valid?
       end
 
-      it "@user.errors should mention the bad phone_number error" do
-        expect(@user.errors.added?(:phone_number, 'invalid country code')).to be true
+      it '@user.errors should mention the bad phone_number error' do
+        expect(@user.errors.added?(:phone_number, 'invalid country code')).to \
+          be true
       end
 
-      context "and preventing the validation" do
+      context 'and preventing the validation' do
         before do
-          @user = User.new(phone_number: 'really bad number', dont_validate: true)
+          @user = User.new \
+            dont_validate: true,
+            phone_number: 'really bad number'
+
           @custom_validator.new(@user).valid?
         end
 
-        it "@user.errors should be empty" do
+        it '@user.errors should be empty' do
           expect(@user.errors.empty?).to be true
         end
       end
     end
 
-    context "given a user with a valid phone_number" do
+    context 'given a user with a valid phone_number' do
       before do
         @user = User.new(phone_number: '123 123')
         @custom_validator.new(@user).valid?
       end
 
-      it "@user.errors should be empty" do
+      it '@user.errors should be empty' do
         expect(@user.errors.empty?).to be true
       end
     end
   end
-
 end

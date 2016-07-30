@@ -1,9 +1,7 @@
 module ObjectAttorney
-
   module Errors
     # ActiveModel::Errors told me to declare
     # the following methods for a minimal implementation
-
     module ClassMethods
       def human_attribute_name(attribute, _ = {})
         attribute
@@ -27,7 +25,5 @@ module ObjectAttorney
     def read_attribute_for_validation(attribute)
       send(attribute)
     end
-
   end
-
 end

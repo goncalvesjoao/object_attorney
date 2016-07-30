@@ -4,7 +4,6 @@ require 'object_attorney/helpers'
 require 'object_attorney/class_methods'
 
 module ObjectAttorney
-
   def self.included(base_class)
     base_class.extend ClassMethods
     base_class.extend ActiveModel::Validations::HelperMethods
@@ -74,7 +73,6 @@ module ObjectAttorney
       allegation.founded_accusation(self, defendant)
     end.compact
   end
-
 end
 
 require 'object_attorney/base'

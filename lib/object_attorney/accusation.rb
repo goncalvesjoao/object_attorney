@@ -1,7 +1,5 @@
 module ObjectAttorney
-
   class Accusation
-
     def initialize(validation, attorney, defendant)
       @attorney = attorney
       @defendant = defendant
@@ -40,7 +38,5 @@ module ObjectAttorney
     def options
       @validation.options
     end
-
   end
-
 end

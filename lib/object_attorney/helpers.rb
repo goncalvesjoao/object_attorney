@@ -1,9 +1,7 @@
 require 'object_attorney/errors'
 
 module ObjectAttorney
-
   module Helpers
-
     module_function
 
     def marked_for_destruction?(object)
@@ -33,7 +31,5 @@ module ObjectAttorney
 
       object.class.class_eval { include Errors }
     end
-
   end
-
 end

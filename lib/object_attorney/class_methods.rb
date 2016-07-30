@@ -2,9 +2,7 @@ require 'object_attorney/validations/custom'
 require 'object_attorney/allegation'
 
 module ObjectAttorney
-
   module ClassMethods
-
     attr_writer :allegations, :defendant_options
 
     def defendant_options
@@ -44,7 +42,5 @@ module ObjectAttorney
 
       super
     end
-
   end
-
 end

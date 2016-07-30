@@ -1,8 +1,6 @@
 module ObjectAttorney
   module Validations
-
     class Custom
-
       attr_reader :options
 
       attr_writer :attorney
@@ -18,8 +16,6 @@ module ObjectAttorney
           Helpers.call_method!(@attorney, method, defendant)
         end
       end
-
     end
-
   end
 end
