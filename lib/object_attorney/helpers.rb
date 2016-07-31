@@ -29,7 +29,7 @@ module ObjectAttorney
     def extend_errors_if_necessary(object)
       return if object.respond_to?(:errors)
 
-      object.class.class_eval { include Errors }
+      object.class.send(:include, Errors)
     end
   end
 end

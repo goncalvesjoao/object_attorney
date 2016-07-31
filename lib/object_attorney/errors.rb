@@ -7,10 +7,15 @@ module ObjectAttorney
         attribute
       end
 
-      # Having doubts if this is really necessary
-      # def lookup_ancestors
-      #   [self]
-      # end
+      # Necessary for proper translations
+      def lookup_ancestors
+        [self]
+      end
+
+      # Necessary for proper translations
+      def i18n_scope
+        :activemodel
+      end
     end
 
     def self.included(base_class)

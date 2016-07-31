@@ -1,4 +1,3 @@
-require 'object_attorney/validations/custom'
 require 'object_attorney/allegation'
 
 module ObjectAttorney
@@ -18,20 +17,18 @@ module ObjectAttorney
     end
 
     def validate(*args, &block)
-      allegations[nil] << Allegation.new(Validations::Custom.new(args, &block))
+      allegations[nil] << Allegation.new(:custom, args, &block)
     end
 
     def validates_with(*args, &block)
       options = args.extract_options!
 
       args.each do |validation_class|
-        store_allegations_by_attribute validation_class.new(options, &block)
-      end
-    end
+        allegation = Allegation.new(validation_class, options, &block)
 
-    def store_allegations_by_attribute(validation)
-      validation.attributes.each do |attribute|
-        allegations[attribute.to_sym] << Allegation.new(validation)
+        allegation.attributes.each do |attribute|
+          allegations[attribute.to_sym].push allegation
+        end
       end
     end
 
