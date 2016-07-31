@@ -26,6 +26,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '3.4.0'
   gem.add_development_dependency 'rubocop', '0.37.2'
   gem.add_development_dependency 'simplecov', '0.11.2'
+  gem.add_development_dependency 'activemodel', '~> 3'
   gem.add_development_dependency 'codeclimate-test-reporter', '0.4.8'
 
   gem.add_dependency 'activemodel', '>= 3.0.0'
