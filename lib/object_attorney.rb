@@ -45,7 +45,7 @@ module ObjectAttorney
 
     return true if Helpers.marked_for_destruction?(defendant)
 
-    founded_accusations(defendant).all?(&:sustained?)
+    founded_accusations(defendant).map(&:sustained?).all?
 
     defendant.errors.empty?
   end
