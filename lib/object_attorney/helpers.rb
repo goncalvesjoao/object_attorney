@@ -1,5 +1,3 @@
-require 'object_attorney/errors'
-
 module ObjectAttorney
   module Helpers
     module_function

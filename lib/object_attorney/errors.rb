@@ -1,5 +1,7 @@
 module ObjectAttorney
   module Errors
+    NoDefendantToDefendError = Class.new(StandardError)
+
     # ActiveModel::Errors told me to declare
     # the following methods for a minimal implementation
     module ClassMethods

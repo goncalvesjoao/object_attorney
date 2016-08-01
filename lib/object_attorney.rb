@@ -1,4 +1,5 @@
 require 'active_model'
+require 'object_attorney/errors'
 require 'object_attorney/version'
 require 'object_attorney/helpers'
 require 'object_attorney/class_methods'
@@ -10,6 +11,8 @@ module ObjectAttorney
   end
 
   def defendant_is_innocent?
+    raise Errors::NoDefendantToDefendError if defendant_options.empty?
+
     proven_innocent = defendants.map do |defendant|
       innocent_of_all_accusations?(defendant)
     end.all?

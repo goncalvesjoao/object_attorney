@@ -1,6 +1,21 @@
 require 'spec_helper'
 
 describe ObjectAttorney do
+  context 'When .defend was never called' do
+    before do
+      @user_validator = Struct.new(:user) do
+        include ObjectAttorney
+
+        validates_presence_of :first_name
+      end
+    end
+
+    it '#valid? should be true' do
+      expect { @user_validator.new(Object.new).valid? }.to \
+        raise_error(ObjectAttorney::Errors::NoDefendantToDefendError)
+    end
+  end
+
   context 'When the defendant is nil' do
     before do
       @user_validator = Struct.new(:user) do

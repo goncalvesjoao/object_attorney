@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    object_attorney (3.0.6)
+    object_attorney (3.0.7)
       activemodel (>= 3.0.0)
 
 GEM
