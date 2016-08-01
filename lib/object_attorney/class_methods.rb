@@ -23,6 +23,9 @@ module ObjectAttorney
     def validates_with(*args, &block)
       options = args.extract_options!
 
+      # certain ActiveModel::Validations::<Class> need this
+      options[:class] = self
+
       args.each do |validation_class|
         allegation = Allegation.new(validation_class, options, &block)
 
