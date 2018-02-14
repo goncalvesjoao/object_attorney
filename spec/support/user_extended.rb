@@ -1,3 +1,5 @@
+require_relative 'user'
+
 class UserExtended < User
   attr_accessor :last_name,
                 :user_name,

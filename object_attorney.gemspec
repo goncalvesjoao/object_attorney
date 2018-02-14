@@ -21,13 +21,12 @@ Gem::Specification.new do |gem|
   gem.test_files = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.add_development_dependency 'pry', '0.10.3'
-  gem.add_development_dependency 'rake', '11.2.2'
-  gem.add_development_dependency 'rspec', '3.4.0'
-  gem.add_development_dependency 'rubocop', '0.37.2'
-  gem.add_development_dependency 'simplecov', '0.11.2'
-  gem.add_development_dependency 'activemodel', '~> 3'
-  gem.add_development_dependency 'codeclimate-test-reporter', '0.4.8'
+  gem.add_development_dependency 'pry', '0.11.3'
+  gem.add_development_dependency 'rake', '12.3.0'
+  gem.add_development_dependency 'rspec', '3.7.0'
+  gem.add_development_dependency 'rubocop', '0.52.1'
+  gem.add_development_dependency 'activemodel', '~> 4.1', '>= 4.1.11'
+  gem.add_development_dependency 'codeclimate-test-reporter', '1.0.8'
 
-  gem.add_dependency 'activemodel', '>= 3.0.0'
+  gem.add_dependency 'activemodel', '~> 4.1', '>= 4.1.11'
 end
