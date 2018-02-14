@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'activemodel', '~> 4.1', '>= 4.1.11'
   gem.add_development_dependency 'codeclimate-test-reporter', '1.0.8'
   gem.add_development_dependency 'pry', '0.11.3'
-  gem.add_development_dependency 'rake', '12.3.0'
+  gem.add_development_dependency 'rake', '11.2.2'
   gem.add_development_dependency 'rspec', '3.7.0'
   gem.add_development_dependency 'rubocop', '0.52.1'
 
