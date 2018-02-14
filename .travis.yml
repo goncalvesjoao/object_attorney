@@ -2,3 +2,6 @@ language: ruby
 rvm:
 - 2.3.0
 - 2.4.2
+env:
+  global:
+    - CC_TEST_REPORTER_ID="lZkZYWLwW1npQjnqmO6fBMngu+jUpes0E6MHRv+XVlQ373/mwqIlT16bqwRfXxvVs/HAFYu92itHADcByznSPvUrn1URwJOIRpuGRaV7WLhXcv6FK1E0TwXlwpcFw19Ga4oasY/Qt98xw8vfjqv6hyk6WhEYnKqwJNy6mZO+T/E="

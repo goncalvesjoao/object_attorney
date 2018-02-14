@@ -21,7 +21,7 @@ describe ObjectAttorney do
       it '@user should contain errors' do
         expect(@user.errors.messages).to match a_hash_including(
           email_confirmation: ['should match confirmation'],
-          password_confirmation: ['should match confirmation']
+          email_confirmation: ['should match confirmation']
         )
       end
     end
