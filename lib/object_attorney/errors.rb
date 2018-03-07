@@ -5,7 +5,7 @@ module ObjectAttorney
     # ActiveModel::Errors told me to declare
     # the following methods for a minimal implementation
     module ClassMethods
-      def human_attribute_name(attribute, _ = {})
+      def human_attribute_name(attribute, _options = {})
         attribute
       end
 

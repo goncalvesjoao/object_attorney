@@ -1,7 +1,13 @@
 language: ruby
 rvm:
-- 2.3.0
-- 2.4.2
-env:
-  global:
-    - CC_TEST_REPORTER_ID="lZkZYWLwW1npQjnqmO6fBMngu+jUpes0E6MHRv+XVlQ373/mwqIlT16bqwRfXxvVs/HAFYu92itHADcByznSPvUrn1URwJOIRpuGRaV7WLhXcv6FK1E0TwXlwpcFw19Ga4oasY/Qt98xw8vfjqv6hyk6WhEYnKqwJNy6mZO+T/E="
+  - 2.3.0
+  - 2.4.2
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - bundle exec rubocop
+  - bundle exec rspec
+after_script:
+  - ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $TRAVIS_TEST_RESULT

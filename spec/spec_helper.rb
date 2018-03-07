@@ -2,7 +2,7 @@ require 'simplecov'
 
 SimpleCov.start do
   root('lib/')
-  coverage_dir('../tmp/coverage/')
+  coverage_dir('../coverage/')
 end
 
 $LOAD_PATH << File.expand_path('../', File.dirname(__FILE__))

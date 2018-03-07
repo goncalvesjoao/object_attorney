@@ -1,5 +1,5 @@
 # Object Attorney
-This gem allows you to create use cases with ActiveModel validations and keep your model clean.
+This gem allows you to create **use cases**, **services** or **form objects** with ActiveModel validations and keep your model clean.
 
 [![Code Climate](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/gpa.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney)
 [![Test Coverage](https://codeclimate.com/github/goncalvesjoao/object_attorney/badges/coverage.svg)](https://codeclimate.com/github/goncalvesjoao/object_attorney/coverage)
@@ -67,3 +67,17 @@ UserValidator.new(@user).invalid? # true
 
 @user.errors.messages # { first_name: ["can't be blank"] }
 ```
+
+## 3) Installation
+
+To install Object Attorney on the default Rails stack, just put this line in your Gemfile:
+```ruby
+gem 'object_attorney'
+```
+
+Then bundle:
+```
+$> bundle
+```
+
+and after that, I'd advise you to lock the gem's version in your Gemfile

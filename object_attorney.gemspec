@@ -1,4 +1,4 @@
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -22,11 +22,10 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_development_dependency 'activemodel', '>= 4.1.11', '< 5.2'
-  gem.add_development_dependency 'codeclimate-test-reporter', '1.0.8'
   gem.add_development_dependency 'pry', '0.11.3'
-  gem.add_development_dependency 'rake', '11.2.2'
   gem.add_development_dependency 'rspec', '3.7.0'
-  gem.add_development_dependency 'rubocop', '0.52.1'
+  gem.add_development_dependency 'rubocop', '0.53.0'
+  gem.add_development_dependency 'simplecov', '0.15.1'
 
   gem.add_dependency 'activemodel', '>= 4.1.11', '< 5.2'
 end
