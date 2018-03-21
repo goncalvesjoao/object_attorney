@@ -10,10 +10,21 @@ module ObjectAttorney
     base_class.extend ActiveModel::Validations::HelperMethods
   end
 
+  def defendant
+    @defendant ||=
+      if parent_defendant
+        Helpers.extend_errors_if_necessary(parent_defendant)
+
+        Helpers.call_method!(parent_defendant, defendant_options[:name])
+      else
+        Helpers.call_method!(self, defendant_options[:name])
+      end
+  end
+
   def defendant_is_innocent?
     raise Errors::NoDefendantToDefendError if defendant_options.empty?
 
-    proven_innocent = defendants.map do |defendant|
+    proven_innocent = [defendant].flatten.compact.map do |defendant|
       innocent_of_all_accusations?(defendant)
     end.all?
 
@@ -29,19 +40,6 @@ module ObjectAttorney
   end
 
   protected ######################### PROTECTED ################################
-
-  def defendants
-    defendant =
-      if parent_defendant
-        Helpers.extend_errors_if_necessary(parent_defendant)
-
-        Helpers.call_method!(parent_defendant, defendant_options[:name])
-      else
-        Helpers.call_method!(self, defendant_options[:name])
-      end
-
-    [defendant].flatten.compact
-  end
 
   def innocent_of_all_accusations?(defendant)
     Helpers.extend_errors_if_necessary(defendant)

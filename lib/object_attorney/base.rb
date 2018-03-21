@@ -2,12 +2,12 @@ module ObjectAttorney
   class Base
     include ObjectAttorney
 
-    defend :defendant
+    defend :object
 
-    attr_reader :defendant
+    attr_reader :object
 
-    def initialize(defendant)
-      @defendant = defendant
+    def initialize(object)
+      @object = object
     end
   end
 end
