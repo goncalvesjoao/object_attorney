@@ -21,11 +21,11 @@ Gem::Specification.new do |gem|
   gem.test_files = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.add_development_dependency 'activemodel', '>= 4.1.11', '< 5.2'
+  gem.add_development_dependency 'activemodel', '>= 5.0'
   gem.add_development_dependency 'pry', '0.11.3'
   gem.add_development_dependency 'rspec', '3.7.0'
   gem.add_development_dependency 'rubocop', '0.53.0'
   gem.add_development_dependency 'simplecov', '0.15.1'
 
-  gem.add_dependency 'activemodel', '>= 4.1.11', '< 5.2'
+  gem.add_dependency 'activemodel', '>= 5.0'
 end
