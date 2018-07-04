@@ -1,3 +1,5 @@
+### https://docs.codeclimate.com/docs/travis-ci-test-coverage
+
 ```
 $> gem install travis
 $> travis login
