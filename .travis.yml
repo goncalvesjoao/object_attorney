@@ -2,6 +2,10 @@ language: ruby
 rvm:
   - 2.3.0
   - 2.4.2
+addons:
+  code_climate:
+    repo_token:
+      secure: "AMYa0pdjwKWT7XLXnLIW4jmJH3bvzbynYrZ5C+mmB6QSfKAM9mVIe4FrKNvqeKmymc4uFROPU1OWJanzgDN8y1yxJmTAHbNyYBxO7w9CjhnMVqsJ03GpFL8FmCgFKOf2vMepp8mDeyXJ5AkjViY9DVbP+L1Q5yt3DOO7tYcIArA="
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -10,8 +14,4 @@ script:
   - bundle exec rubocop
   - bundle exec rspec
 after_script:
-  - ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $TRAVIS_TEST_RESULT
-addons:
-  code_climate:
-    repo_token:
-      secure: "AMYa0pdjwKWT7XLXnLIW4jmJH3bvzbynYrZ5C+mmB6QSfKAM9mVIe4FrKNvqeKmymc4uFROPU1OWJanzgDN8y1yxJmTAHbNyYBxO7w9CjhnMVqsJ03GpFL8FmCgFKOf2vMepp8mDeyXJ5AkjViY9DVbP+L1Q5yt3DOO7tYcIArA="
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
