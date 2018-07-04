@@ -68,7 +68,30 @@ UserValidator.new(@user).invalid? # true
 @user.errors.messages # { first_name: ["can't be blank"] }
 ```
 
-## 3) Installation
+## 3) Known issues
+
+- **validates_uniqueness_of** doesn't work. We need to do it ourselves:
+
+  ```ruby
+  class UserValidator < ObjectAttorney::Base
+    validate :name_uniqueness
+
+    def name_uniqueness(user)
+      return if users_with_same_name(user).blank?
+
+      user.errors.add(:name, :taken)
+    end
+
+    private
+
+    def users_with_same_name(user)
+      User.where.not(user_id: user.id).where(name: user.name)
+    end
+  end
+
+  ```
+
+## 4) Installation
 
 To install Object Attorney on the default Rails stack, just put this line in your Gemfile:
 ```ruby
